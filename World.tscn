@@ -1,0 +1,101 @@
+[gd_scene load_steps=15 format=3 uid="uid://xv1k3wuhqavi"]
+
+[ext_resource type="Texture2D" uid="uid://b8118oep1e568" path="res://kenney_prototype-textures/PNG/Dark/texture_07.png" id="1_2dftf"]
+[ext_resource type="Texture2D" uid="uid://j6ehl8lui555" path="res://kloofendal_48d_partly_cloudy_puresky_4k.hdr" id="1_c6gwx"]
+[ext_resource type="Script" uid="uid://603hhk4pggmc" path="res://SceneManager.gd" id="1_js7pq"]
+[ext_resource type="Texture2D" uid="uid://drho6vpg1tfpa" path="res://kenney_prototype-textures/PNG/Orange/texture_02.png" id="2_js7pq"]
+[ext_resource type="PackedScene" uid="uid://c8b00seg1kw7x" path="res://PlayerController.tscn" id="4_js7pq"]
+[ext_resource type="Script" uid="uid://cci0lp62aunmc" path="res://network_rb.gd" id="4_p1v5b"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bcbcq"]
+albedo_texture = ExtResource("1_2dftf")
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_eu7l1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p1v5b"]
+albedo_texture = ExtResource("2_js7pq")
+uv1_triplanar = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_eu7l1"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_p1v5b"]
+properties/0/path = NodePath(".:replicated_position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:replicated_rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:replicated_linear_velocity")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:replicated_angular_velocity")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_2dftf"]
+panorama = ExtResource("1_c6gwx")
+
+[sub_resource type="Sky" id="Sky_bcbcq"]
+sky_material = SubResource("PanoramaSkyMaterial_2dftf")
+
+[sub_resource type="Environment" id="Environment_2dftf"]
+background_mode = 2
+sky = SubResource("Sky_bcbcq")
+tonemap_mode = 2
+glow_enabled = true
+
+[node name="World" type="Node3D"]
+script = ExtResource("1_js7pq")
+PlayerScene = ExtResource("4_js7pq")
+
+[node name="stage" type="Node3D" parent="."]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 2, 11)
+use_collision = true
+flip_faces = true
+size = Vector3(131, 6, 84)
+material = SubResource("StandardMaterial3D_bcbcq")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="stage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.82036, -8.49187)
+use_collision = true
+size = Vector3(21, 4.75928, 2.99469)
+material = SubResource("StandardMaterial3D_bcbcq")
+
+[node name="Box" type="RigidBody3D" parent="stage" groups=["grab"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.75904, 0.768105, 0)
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("4_p1v5b")
+metadata/Verb = "Grab"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="stage/Box"]
+mesh = SubResource("BoxMesh_eu7l1")
+surface_material_override/0 = SubResource("StandardMaterial3D_p1v5b")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="stage/Box"]
+shape = SubResource("BoxShape3D_eu7l1")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="stage/Box"]
+replication_config = SubResource("SceneReplicationConfig_p1v5b")
+visibility_update_mode = 1
+
+[node name="environment" type="Node3D" parent="."]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="environment"]
+environment = SubResource("Environment_2dftf")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="environment"]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="spawns" type="Node3D" parent="."]
+
+[node name="0" type="Node3D" parent="spawns" groups=["spawn_point"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 0, 0)
+
+[node name="1" type="Node3D" parent="spawns" groups=["spawn_point"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)

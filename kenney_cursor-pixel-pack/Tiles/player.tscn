@@ -1,0 +1,105 @@
+[gd_scene load_steps=8 format=3 uid="uid://dj8stt8jwluph"]
+
+[ext_resource type="Script" uid="uid://i48ae2p7id5y" path="res://player.gd" id="1_5waqi"]
+[ext_resource type="Script" uid="uid://cfhlcaae8v74w" path="res://player_grab.gd" id="2_2l2yn"]
+[ext_resource type="Script" uid="uid://kq6kdi1u0vlc" path="res://hud.gd" id="3_u1uee"]
+[ext_resource type="Texture2D" uid="uid://dyttff6d2nf6x" path="res://kenney_cursor-pixel-pack/Tiles/tile_0045.png" id="4_ctvpk"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bcbcq"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_js7pq"]
+height = 1.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_bah7m"]
+
+[node name="player" type="CharacterBody3D"]
+script = ExtResource("1_5waqi")
+
+[node name="player_grab" type="Node" parent="."]
+script = ExtResource("2_2l2yn")
+
+[node name="Cooldown" type="Timer" parent="player_grab"]
+
+[node name="standing_collision_shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_bcbcq")
+
+[node name="crouch_collision_shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_js7pq")
+
+[node name="head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+
+[node name="Hold" type="Node3D" parent="head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+
+[node name="HUD" type="Control" parent="head"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_u1uee")
+
+[node name="Reticle" type="TextureRect" parent="head/HUD"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(8, 8)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("4_ctvpk")
+stretch_mode = 2
+
+[node name="SafezoneContainer" type="AspectRatioContainer" parent="head/HUD"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+ratio = 1.6
+stretch_mode = 1
+
+[node name="InputHints" type="RichTextLabel" parent="head/HUD/SafezoneContainer"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "WASD - Move
+Space - Jump
+Ctrl - Crouch"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control" type="Control" parent="head/HUD/SafezoneContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Sprite2D" type="Sprite2D" parent="head/HUD/SafezoneContainer"]
+
+[node name="Camera3D" type="Camera3D" parent="head"]
+
+[node name="interaction_raycast" type="ShapeCast3D" parent="head"]
+shape = SubResource("SphereShape3D_bah7m")
+target_position = Vector3(0, 0, -2)
+collision_mask = 2
+
+[node name="uncrouch_raycast" type="RayCast3D" parent="."]
+target_position = Vector3(0, 2, 0)
+
+[connection signal="timeout" from="player_grab/Cooldown" to="player_grab" method="reset_thrown"]
