@@ -10,12 +10,10 @@ signal lobby_created
 signal lobby_invite
 signal lobby_joined
 signal lobby_match_list
-
+signal lobby_kicked
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	Steam.p2p_session_request.connect(_on_p2p_session_request)
-	Steam.p2p_session_request.connect(_on_p2p_session_connect_fail)
 		
 	Steam.lobby_match_list.connect(func (lobbies: Array):
 		print(lobbies)
@@ -31,9 +29,6 @@ func _ready() -> void:
 		Steam.setLobbyData(new_lobby_id, "game", "MAKUDO")
 		
 		lobby_id = new_lobby_id;
-		# Allow P2P connections to fallback to being relayed through Steam if needed
-		var set_relay: bool = Steam.allowP2PPacketRelay(true)
-		print("Allowing Steam to be relay backup: %s" % set_relay)
 		lobby_created.emit(connect, new_lobby_id)
 		pass
 	)
@@ -49,14 +44,19 @@ func _ready() -> void:
 			lobby_id = lobby
 			# Get the lobby members
 			get_lobby_members()
-			# Make the initial handshake
-			make_p2p_handshake()
+			
 			lobby_joined.emit(lobby_id, permissions, locked, response)
 		pass
 	)
 	
+	Steam.lobby_kicked.connect(func (lobby_id: int, admin_id: int, due_to_disconnect: int):
+		lobby_id = 0
+		lobby_kicked.emit(lobby_id, admin_id, due_to_disconnect)
+		pass
+	)
+	
 	Steam.join_requested.connect(func(this_lobby_id: int, friend_id: int):
-				# Get the lobby owner's name
+		# Get the lobby owner's name
 		var owner_name: String = Steam.getFriendPersonaName(friend_id)
 
 		print("Joining %s's lobby..." % owner_name)
@@ -64,17 +64,8 @@ func _ready() -> void:
 		# Attempt to join the lobby
 		join_lobby(this_lobby_id)
 	)
-	
 	# Check for command line arguments
 	check_command_line()
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	# If the player is connected, read packets
-	if lobby_id > 0:
-		read_p2p_packet()
-	pass
-
 
 func check_command_line() -> void:
 	var these_arguments: Array = OS.get_cmdline_args()
@@ -101,46 +92,6 @@ func join_lobby(this_lobby_id: int) -> void:
 	lobby_members.clear()
 	# Make the lobby join request to Steam
 	Steam.joinLobby(this_lobby_id)
-
-func _on_p2p_session_request(remote_id: int) -> void:
-	# Get the requester's name
-	var this_requester: String = Steam.getFriendPersonaName(remote_id)
-	print("%s is requesting a P2P session" % this_requester)
-
-	# Accept the P2P session; can apply logic to deny this request if needed
-	Steam.acceptP2PSessionWithUser(remote_id)
-
-	# Make the initial handshake
-	make_p2p_handshake()
-
-func _on_p2p_session_connect_fail(steam_id: int, session_error: int) -> void:
-	# If no error was given
-	if session_error == 0:
-		print("WARNING: Session failure with %s: no error given" % steam_id)
-
-	# Else if target user was not running the same game
-	elif session_error == 1:
-		print("WARNING: Session failure with %s: target user not running the same game" % steam_id)
-
-	# Else if local user doesn't own app / game
-	elif session_error == 2:
-		print("WARNING: Session failure with %s: local user doesn't own app / game" % steam_id)
-
-	# Else if target user isn't connected to Steam
-	elif session_error == 3:
-		print("WARNING: Session failure with %s: target user isn't connected to Steam" % steam_id)
-
-	# Else if connection timed out
-	elif session_error == 4:
-		print("WARNING: Session failure with %s: connection timed out" % steam_id)
-
-	# Else if unused
-	elif session_error == 5:
-		print("WARNING: Session failure with %s: unused" % steam_id)
-
-	# Else no known error
-	else:
-		print("WARNING: Session failure with %s: unknown error %s" % [steam_id, session_error])
 
 func get_lobby_members() -> void:
 	# Clear your previous lobby list
@@ -207,9 +158,6 @@ func _on_lobby_chat_update(this_lobby_id: int, change_id: int, making_change_id:
 	# Update the lobby now that a change has occurred
 	get_lobby_members()
 
-func make_p2p_handshake() -> void:
-	print("Sending P2P handshake to the lobby")
-	send_p2p_packet(0, {"message": "handshake", "from": Steamworks.steam_id})
 
 func _on_open_lobby_list_pressed() -> void:
 	# Set distance to worldwide
@@ -219,48 +167,3 @@ func _on_open_lobby_list_pressed() -> void:
 	
 	print("Requesting a lobby list")
 	Steam.requestLobbyList()
-
-func read_p2p_packet() -> void:
-	var packet_size: int = Steam.getAvailableP2PPacketSize(0)
-
-	# There is a packet
-	if packet_size > 0:
-		print("Reading p2p packet")
-		var this_packet: Dictionary = Steam.readP2PPacket(packet_size, 0)
-
-		if this_packet.is_empty() or this_packet == null:
-			print("WARNING: read an empty packet with non-zero size!")
-
-		# Get the remote user's ID
-		var packet_sender: int = this_packet['remote_steam_id']
-
-		# Make the packet data readable
-		var packet_code: PackedByteArray = this_packet['data']
-		var readable_data: Dictionary = bytes_to_var(packet_code)
-
-		# Print the packet to output
-		print("Packet: %s" % readable_data)
-
-		# Append logic here to deal with packet data
-
-
-func send_p2p_packet(this_target: int, packet_data: Dictionary) -> void:
-	# Set the send_type and channel
-	var send_type: int = Steam.P2P_SEND_RELIABLE
-	var channel: int = 0
-
-	# Create a data array to send the data through
-	var this_data: PackedByteArray
-	this_data.append_array(var_to_bytes(packet_data))
-
-	# If sending a packet to everyone
-	if this_target == 0:
-		# If there is more than one user, send packets
-		if lobby_members.size() > 1:
-			# Loop through all members that aren't you
-			for this_member in lobby_members:
-				if this_member['steam_id'] != Steamworks.steam_id:
-					Steam.sendP2PPacket(this_member['steam_id'], this_data, send_type, channel)
-	# Else send it to someone specific
-	else:
-		Steam.sendP2PPacket(this_target, this_data, send_type, channel)

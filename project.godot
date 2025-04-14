@@ -17,7 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-GameManager="*res://GameManager.gd"
+GameManager="*res://game_manager.gd"
 Lobby="*res://lobby.gd"
 Steamworks="*res://steamworks.gd"
 

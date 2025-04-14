@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ca4nsesn2ilu7"]
 
-[ext_resource type="Script" uid="uid://bxdmhbrefaae4" path="res://MultiplayerController.gd" id="1_2mtgd"]
+[ext_resource type="Script" uid="uid://bxdmhbrefaae4" path="res://multuplayer_controller.gd" id="1_luirv"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -9,7 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_2mtgd")
+script = ExtResource("1_luirv")
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 2
@@ -36,44 +36,11 @@ grow_vertical = 2
 [node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
 custom_minimum_size = Vector2(0, 500)
 layout_mode = 2
-current_tab = 1
-
-[node name="LAN" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
-visible = false
-layout_mode = 2
-metadata/_tab_index = 0
-
-[node name="Space2" type="Control" parent="VBoxContainer/TabContainer/LAN"]
-custom_minimum_size = Vector2(0, 45)
-layout_mode = 2
-
-[node name="ip" type="LineEdit" parent="VBoxContainer/TabContainer/LAN"]
-layout_mode = 2
-text = "127.0.0.1"
-placeholder_text = "ip"
-
-[node name="port" type="LineEdit" parent="VBoxContainer/TabContainer/LAN"]
-layout_mode = 2
-text = "8910"
-placeholder_text = "port"
-
-[node name="Space" type="Control" parent="VBoxContainer/TabContainer/LAN"]
-custom_minimum_size = Vector2(0, 45)
-layout_mode = 2
-
-[node name="Host" type="Button" parent="VBoxContainer/TabContainer/LAN"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-text = "Host"
-
-[node name="connect" type="Button" parent="VBoxContainer/TabContainer/LAN"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-text = "Connect"
+current_tab = 0
 
 [node name="Steam" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
 layout_mode = 2
-metadata/_tab_index = 1
+metadata/_tab_index = 0
 
 [node name="Space" type="Control" parent="VBoxContainer/TabContainer/Steam"]
 custom_minimum_size = Vector2(0, 45)
@@ -116,6 +83,39 @@ custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 text = "Open Friends"
 
+[node name="LAN" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Space2" type="Control" parent="VBoxContainer/TabContainer/LAN"]
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+
+[node name="ip" type="LineEdit" parent="VBoxContainer/TabContainer/LAN"]
+layout_mode = 2
+text = "127.0.0.1"
+placeholder_text = "ip"
+
+[node name="port" type="LineEdit" parent="VBoxContainer/TabContainer/LAN"]
+layout_mode = 2
+text = "8910"
+placeholder_text = "port"
+
+[node name="Space" type="Control" parent="VBoxContainer/TabContainer/LAN"]
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+
+[node name="Host" type="Button" parent="VBoxContainer/TabContainer/LAN"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Host"
+
+[node name="connect" type="Button" parent="VBoxContainer/TabContainer/LAN"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Connect"
+
 [node name="Start" type="Button" parent="VBoxContainer"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
@@ -142,9 +142,9 @@ grow_vertical = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[connection signal="button_down" from="VBoxContainer/TabContainer/LAN/Host" to="." method="host_enet"]
-[connection signal="button_down" from="VBoxContainer/TabContainer/LAN/connect" to="." method="join_enet"]
 [connection signal="button_down" from="VBoxContainer/TabContainer/Steam/create_lobby" to="." method="create_steam_socket"]
 [connection signal="button_down" from="VBoxContainer/TabContainer/Steam/show_lobbies" to="." method="_on_show_lobbies_pressed"]
 [connection signal="button_down" from="VBoxContainer/TabContainer/Steam/LobbyView/Invite Friends" to="." method="_on_friends_button_pressed"]
+[connection signal="button_down" from="VBoxContainer/TabContainer/LAN/Host" to="." method="host_enet"]
+[connection signal="button_down" from="VBoxContainer/TabContainer/LAN/connect" to="." method="join_enet"]
 [connection signal="button_down" from="VBoxContainer/Start" to="." method="_on_start_button_down"]

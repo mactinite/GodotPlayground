@@ -9,6 +9,7 @@ extends Control
 @onready var create_lobby: Button = $VBoxContainer/TabContainer/Steam/create_lobby
 @onready var invite_friends: Button = $"VBoxContainer/TabContainer/Steam/LobbyView/Invite Friends"
 
+@onready var show_lobbies: Button = $VBoxContainer/TabContainer/Steam/show_lobbies
 @onready var lobby_view: HFlowContainer = $VBoxContainer/TabContainer/Steam/LobbyView
 @onready var lobbies_list: VBoxContainer = $LobbiesPanel/ScrollContainer/LobbiesList
 @onready var lobbies_panel: Panel = $LobbiesPanel
@@ -19,26 +20,26 @@ extends Control
 
 var peer
 var lobbiesListOpen = false
+var scene
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	multiplayer.peer_connected.connect(_peer_connected)
 	multiplayer.peer_disconnected.connect(_peer_disconnected)
 	multiplayer.connected_to_server.connect(connected_to_server)
 	multiplayer.connection_failed.connect(connection_failed)
+	multiplayer.server_disconnected.connect(server_disconnected)
 
 	label.text = Steamworks.steam_username
 	
 	Lobby.lobby_created.connect(func(connect: int, lobby_id: int):
 		lobby_view.show()
-		pass
-	)
-	
-	Lobby.lobby_invite.connect(func(inviter: int, lobby: int, game: int):
+		show_lobbies.hide()
 		pass
 	)
 	
 	Lobby.lobby_joined.connect(func (lobby: int, permissions: int, locked: bool, response: int):
 		if Steam.getLobbyOwner(lobby) != Steamworks.steam_id:
+			lobby_view.show()
 			connect_steam_socket(Steam.getLobbyOwner(lobby))
 		pass
 	)
@@ -52,11 +53,26 @@ func _ready() -> void:
 			button.text = str(name) + " : "+ str(owner)
 			
 			lobbies_list.add_child(button)
-			button.connect("pressed", Callable(Lobby, "join_lobby").bind(lobby))
+			button.connect("pressed", Callable(self, "join_lobby").bind(lobby))
+	)
+	
+	Lobby.lobby_kicked.connect(func():
+		pass
 	)
 
+# Called on clients when they lose connection to the server
+func server_disconnected():
+	# cleanup
+	if scene != null:
+		scene.queue_free()
+		scene = null
+		self.show()
+	
 
-
+func join_lobby(lobby: int):
+	lobbiesListOpen = false
+	Lobby.join_lobby(lobby)
+ 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
 	pass
@@ -85,7 +101,7 @@ func connection_failed():
 
 @rpc("any_peer", "call_local")
 func start_game():
-	var scene = load("res://World.tscn").instantiate()
+	scene = load("res://World.tscn").instantiate()
 	get_tree().root.add_child(scene)
 	self.hide()
 
@@ -151,10 +167,6 @@ func join_enet():
 func _on_start_button_down():
 	start_game.rpc()
 	pass
-	
-func _on_friends_button_pressed():
-	Steam.activateGameOverlayInviteDialog(Steamworks.steam_id)
-pass
 
 func _on_show_lobbies_pressed():
 	if !lobbiesListOpen:
