@@ -19,6 +19,7 @@ extends Control
 @onready var lobbies_list: VBoxContainer = $LobbiesPanel/ScrollContainer/LobbiesList
 @onready var lobbies_panel: Panel = $LobbiesPanel
 
+@onready var enet_connect_button: Button = $VBoxContainer/TabContainer/LAN/connect
 @onready var enet_host_button: Button = $VBoxContainer/TabContainer/LAN/Host
 @onready var address_input: LineEdit = $VBoxContainer/TabContainer/LAN/ip
 @onready var port_input: LineEdit = $VBoxContainer/TabContainer/LAN/port
@@ -69,11 +70,29 @@ func _ready() -> void:
 # Called on clients when they lose connection to the server
 func server_disconnected():
 	# cleanup
+	reset();
+	
+
+func reset():
 	if scene != null:
 		scene.queue_free()
 		scene = null
-		self.show()
-	
+	self.show()
+	lobbies_panel.hide()
+	lobbiesListOpen = false;
+	create_lobby.show()
+	show_lobbies.show()
+	address_input.editable = true
+	port_input.editable = true
+	lobby_view.hide()
+	enet_host_button.show()
+	enet_connect_button.show()
+	if(Lobby.lobby_id > 0):
+		Lobby.leave_lobby()
+		Lobby.lobby_members.clear()
+	list_members()
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	GameManager.players.clear()
 
 func join_lobby(lobby: int):
 	_on_show_lobbies_pressed()
@@ -131,6 +150,7 @@ func send_player_info(username: String, id: int):
 	if multiplayer.is_server():
 		if(GameManager.game_started):
 			players.spawn_players()
+			start_game.rpc_id(id)
 		
 		for i in GameManager.players:
 			send_player_info.rpc(GameManager.players[i].name, i)
