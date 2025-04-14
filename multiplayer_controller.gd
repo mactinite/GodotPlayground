@@ -1,6 +1,11 @@
 extends Control
 @export var address = "127.0.0.1"
 @export var port = 8910
+@export var gameScene: PackedScene;
+@onready var player_spawner: MultiplayerSpawner = $"../Player Spawner"
+@onready var map_spawner: MultiplayerSpawner = $"../Map Spawner"
+@onready var map: Node3D = $"../Map"
+@onready var players: Node3D = $"../Players"
 
 @onready var start: Button = $VBoxContainer/Start
 
@@ -23,6 +28,7 @@ var lobbiesListOpen = false
 var scene
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	map_spawner.add_spawnable_scene(gameScene.resource_path)
 	multiplayer.peer_connected.connect(_peer_connected)
 	multiplayer.peer_disconnected.connect(_peer_disconnected)
 	multiplayer.connected_to_server.connect(connected_to_server)
@@ -70,7 +76,7 @@ func server_disconnected():
 	
 
 func join_lobby(lobby: int):
-	lobbiesListOpen = false
+	_on_show_lobbies_pressed()
 	Lobby.join_lobby(lobby)
  
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -85,6 +91,7 @@ func _peer_connected(id):
 #called on server and clients
 func _peer_disconnected(id):
 	print("Player Disconnected " + str(id))
+	GameManager._remove_player(id)
 	pass
 	
 #called only on clients
@@ -99,23 +106,32 @@ func connection_failed():
 
 # --- RPCs
 
-@rpc("any_peer", "call_local")
+@rpc("authority", "call_local")
 func start_game():
-	scene = load("res://World.tscn").instantiate()
-	get_tree().root.add_child(scene)
+	if multiplayer.is_server():
+		scene = gameScene.instantiate()
+		map.add_child(scene)
+		players.spawn_players()
 	self.hide()
+	GameManager.game_started = true
 
 
+	
 @rpc("any_peer")
 func send_player_info(username: String, id: int):
 	if !GameManager.players.has(id):
 		GameManager.players[id] = {
 			"name": username,
 			"id": id,
-			"score": 0
+			"score": 0,
+			"player_node": null
 		}
+	
 	list_members()
 	if multiplayer.is_server():
+		if(GameManager.game_started):
+			players.spawn_players()
+		
 		for i in GameManager.players:
 			send_player_info.rpc(GameManager.players[i].name, i)
 

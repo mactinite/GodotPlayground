@@ -1,9 +1,9 @@
 [gd_scene load_steps=10 format=3 uid="uid://c8b00seg1kw7x"]
 
-[ext_resource type="Script" uid="uid://i48ae2p7id5y" path="res://player.gd" id="1_2be4l"]
-[ext_resource type="Script" uid="uid://cfhlcaae8v74w" path="res://player_grab.gd" id="2_1hgir"]
-[ext_resource type="Script" uid="uid://kq6kdi1u0vlc" path="res://hud.gd" id="3_g0g1r"]
-[ext_resource type="Texture2D" uid="uid://dyttff6d2nf6x" path="res://kenney_cursor-pixel-pack/Tiles/tile_0045.png" id="4_3pjhv"]
+[ext_resource type="Script" uid="uid://i48ae2p7id5y" path="res://player.gd" id="1_6nbh1"]
+[ext_resource type="Script" uid="uid://cfhlcaae8v74w" path="res://player_grab.gd" id="2_halkx"]
+[ext_resource type="Script" uid="uid://kq6kdi1u0vlc" path="res://hud.gd" id="3_4garc"]
+[ext_resource type="Texture2D" uid="uid://dyttff6d2nf6x" path="res://kenney_cursor-pixel-pack/Tiles/tile_0045.png" id="4_lyd3o"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_876be"]
 
@@ -23,10 +23,10 @@ properties/1/replication_mode = 1
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_1hgir"]
 
 [node name="PlayerController" type="CharacterBody3D"]
-script = ExtResource("1_2be4l")
+script = ExtResource("1_6nbh1")
 
 [node name="player_grab" type="Node" parent="."]
-script = ExtResource("2_1hgir")
+script = ExtResource("2_halkx")
 
 [node name="Cooldown" type="Timer" parent="player_grab"]
 
@@ -51,7 +51,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("3_g0g1r")
+script = ExtResource("3_4garc")
 
 [node name="Reticle" type="TextureRect" parent="head/HUD"]
 texture_filter = 1
@@ -70,7 +70,7 @@ grow_vertical = 2
 pivot_offset = Vector2(8, 8)
 size_flags_horizontal = 4
 size_flags_vertical = 4
-texture = ExtResource("4_3pjhv")
+texture = ExtResource("4_lyd3o")
 stretch_mode = 2
 
 [node name="SafezoneContainer" type="AspectRatioContainer" parent="head/HUD"]

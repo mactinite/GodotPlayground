@@ -1,28 +1,22 @@
 extends Node
 
+var player_scene = "res://player_controller.tscn";
 var players = {
 	# name
 	# id
 	# player_node
 }
-
-var gameStarted: bool = false;
-
+var game_started = false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.
 
-func _spawn_players(player_scene: PackedScene):
-	var index = 0
-	for i in GameManager.players:
-		if(GameManager.players[i].player_node != null):
-			var currentPlayer = player_scene.instantiate()
-			currentPlayer.name = str(GameManager.players[i].id)
-			add_child(currentPlayer)
-			for spawn in get_tree().get_nodes_in_group("spawn_point"):
-				if spawn.name == str(index):
-					currentPlayer.global_position = spawn.global_position
-			index += 1
+func _remove_player(id: int):
+	if GameManager.players[id].player_node != null:
+		GameManager.players[id].player_node.queue_free()
+		GameManager.players.erase(id)
+
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

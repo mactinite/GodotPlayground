@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://gas7lotpits8"]
+
+[ext_resource type="PackedScene" uid="uid://ca4nsesn2ilu7" path="res://multiplayer_ui.tscn" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://603hhk4pggmc" path="res://player_manager.gd" id="2_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://c8b00seg1kw7x" path="res://player_controller.tscn" id="3_h2yge"]
+
+[node name="Root" type="Node3D"]
+
+[node name="Multiplayer UI" parent="." instance=ExtResource("1_ig7tw")]
+
+[node name="Map" type="Node3D" parent="."]
+
+[node name="Players" type="Node3D" parent="." node_paths=PackedStringArray("spawner")]
+script = ExtResource("2_0xm2m")
+player_scene = ExtResource("3_h2yge")
+spawner = NodePath("../Player Spawner")
+
+[node name="Map Spawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://xv1k3wuhqavi")
+spawn_path = NodePath("../Map")
+
+[node name="Player Spawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://c8b00seg1kw7x")
+spawn_path = NodePath("../Players")

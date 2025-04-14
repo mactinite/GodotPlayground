@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="GodotPlayground"
-run/main_scene="uid://ca4nsesn2ilu7"
+run/main_scene="uid://gas7lotpits8"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 

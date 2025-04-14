@@ -25,8 +25,8 @@ var direction = Vector3.ZERO;
 const mouse_sens = 0.2
 
 func _ready():
-	set_multiplayer_authority(str(name).to_int())
-	player_grab.set_multiplayer_authority(str(name).to_int())
+	set_multiplayer_authority(name.to_int())
+	
 	starting_height = head.position.y
 	crouch_collision_shape.disabled = true
 	
