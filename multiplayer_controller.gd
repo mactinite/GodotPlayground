@@ -2,10 +2,10 @@ extends Control
 @export var address = "127.0.0.1"
 @export var port = 8910
 @export var gameScene: PackedScene;
-@onready var player_spawner: MultiplayerSpawner = $"../Player Spawner"
-@onready var map_spawner: MultiplayerSpawner = $"../Map Spawner"
-@onready var map: Node3D = $"../Map"
-@onready var players: Node3D = $"../Players"
+@export var player_spawner: MultiplayerSpawner
+@export var map_spawner: MultiplayerSpawner
+@export var map: Node3D 
+@export var players: Node3D
 
 @onready var start: Button = $VBoxContainer/Start
 
@@ -132,7 +132,7 @@ func start_game():
 		map.add_child(scene)
 		players.spawn_players()
 	self.hide()
-	GameManager.game_started = true
+	GameManager.start_game()
 
 
 	

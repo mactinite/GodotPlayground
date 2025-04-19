@@ -24,6 +24,8 @@ var lerp_speed = 10.0
 var direction = Vector3.ZERO;
 const mouse_sens = 0.2
 
+var can_control = true
+
 func _ready():
 	set_multiplayer_authority(name.to_int())
 	
@@ -33,20 +35,21 @@ func _ready():
 	if is_multiplayer_authority():
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		camera_3d.set_current(true)
+		GameManager.local_player_object = self
 	else:
 		hud.hide()
 		camera_3d.set_current(false)
 
 	
 func _input(event: InputEvent):
-	if is_multiplayer_authority():
+	if is_multiplayer_authority() && can_control:
 		if event is InputEventMouseMotion:
 			rotate_y(deg_to_rad(-event.relative.x * mouse_sens))
 			head.rotate_x(deg_to_rad(-event.relative.y * mouse_sens))
 			head.rotation.x = clamp(head.rotation.x, deg_to_rad(-89), deg_to_rad(89))
 
 func _physics_process(delta: float) -> void:
-	if get_multiplayer_authority() == multiplayer.get_unique_id():
+	if is_multiplayer_authority() && can_control:
 		movement(delta)
 	
 func movement(delta: float) -> void:

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3 uid="uid://d386fdn2klu8g"]
+
+[ext_resource type="Script" uid="uid://b8piwlhct7bt7" path="res://inventory/item_data.gd" id="1_0ciy1"]
+[ext_resource type="Texture2D" uid="uid://cgljxf8ofvb2" path="res://assets/kenney_food-kit/Previews/hot-dog.png" id="2_r68n0"]
+
+[resource]
+script = ExtResource("1_0ciy1")
+name = "Hot dog"
+description = "With ketchup and mustard!"
+stackable = true
+texture = ExtResource("2_r68n0")
+metadata/_custom_type_script = "uid://b8piwlhct7bt7"

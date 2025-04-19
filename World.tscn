@@ -1,9 +1,13 @@
-[gd_scene load_steps=13 format=3 uid="uid://xv1k3wuhqavi"]
+[gd_scene load_steps=20 format=3 uid="uid://xv1k3wuhqavi"]
 
 [ext_resource type="Texture2D" uid="uid://b8118oep1e568" path="res://kenney_prototype-textures/PNG/Dark/texture_07.png" id="1_2dftf"]
 [ext_resource type="Texture2D" uid="uid://j6ehl8lui555" path="res://kloofendal_48d_partly_cloudy_puresky_4k.hdr" id="1_c6gwx"]
 [ext_resource type="Texture2D" uid="uid://drho6vpg1tfpa" path="res://kenney_prototype-textures/PNG/Orange/texture_02.png" id="2_js7pq"]
+[ext_resource type="PackedScene" uid="uid://iiil5nle6p02" path="res://inventory/chest.tscn" id="4_eu7l1"]
 [ext_resource type="Script" uid="uid://cci0lp62aunmc" path="res://network_rb.gd" id="4_p1v5b"]
+[ext_resource type="Script" uid="uid://wji23f4hiua6" path="res://inventory/inventory_data.gd" id="5_wygdx"]
+[ext_resource type="Script" uid="uid://ch1aa333rl54e" path="res://inventory/slot_data.gd" id="6_bah7m"]
+[ext_resource type="Resource" uid="uid://d386fdn2klu8g" path="res://inventory/resources/hot_dog.tres" id="7_bah7m"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bcbcq"]
 albedo_texture = ExtResource("1_2dftf")
@@ -31,6 +35,23 @@ properties/2/replication_mode = 1
 properties/3/path = NodePath(".:replicated_angular_velocity")
 properties/3/spawn = true
 properties/3/replication_mode = 1
+
+[sub_resource type="Resource" id="Resource_fvag4"]
+script = ExtResource("6_bah7m")
+item_data = ExtResource("7_bah7m")
+quantity = 49
+metadata/_custom_type_script = "uid://ch1aa333rl54e"
+
+[sub_resource type="Resource" id="Resource_kva58"]
+script = ExtResource("6_bah7m")
+item_data = ExtResource("7_bah7m")
+quantity = 63
+metadata/_custom_type_script = "uid://ch1aa333rl54e"
+
+[sub_resource type="Resource" id="Resource_fv4w7"]
+script = ExtResource("5_wygdx")
+slot_datas = Array[ExtResource("6_bah7m")]([SubResource("Resource_fvag4"), null, null, null, null, null, null, SubResource("Resource_kva58"), null, null])
+metadata/_custom_type_script = "uid://wji23f4hiua6"
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_2dftf"]
 panorama = ExtResource("1_c6gwx")
@@ -78,6 +99,10 @@ shape = SubResource("BoxShape3D_eu7l1")
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="stage/Box"]
 replication_config = SubResource("SceneReplicationConfig_p1v5b")
 visibility_update_mode = 1
+
+[node name="Chest" parent="stage" groups=["loot"] instance=ExtResource("4_eu7l1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.937155, 0)
+inventory_data = SubResource("Resource_fv4w7")
 
 [node name="environment" type="Node3D" parent="."]
 

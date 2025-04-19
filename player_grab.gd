@@ -22,7 +22,7 @@ func move_object(path: String, pos: Vector3):
 
 func _physics_process(delta):
 	if is_multiplayer_authority():
-		if Input.is_action_pressed("interact"):
+		if Input.is_action_pressed("fire"):
 			if obj == null:
 				var collider = interaction_raycast.get_collider(0)
 				if collider != null:

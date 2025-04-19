@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3 uid="uid://iiil5nle6p02"]
+
+[ext_resource type="Script" uid="uid://kgodulaaq763" path="res://inventory/container.gd" id="1_sevpx"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_1xaki"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sevpx"]
+albedo_color = Color(0.44, 0.3322, 0.2244, 1)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_taoi7"]
+data = PackedVector3Array(-0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5)
+
+[node name="Chest" type="StaticBody3D"]
+collision_layer = 5
+script = ExtResource("1_sevpx")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_1xaki")
+surface_material_override/0 = SubResource("StandardMaterial3D_sevpx")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("ConcavePolygonShape3D_taoi7")
