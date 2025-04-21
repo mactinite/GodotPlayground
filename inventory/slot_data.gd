@@ -6,6 +6,13 @@ const MAX_STACK_SIZE: int = 99
 @export var item_data: ItemData
 @export_range(1,MAX_STACK_SIZE) var quantity:int = 1: set = set_quantity
 
+
+
+func _init(_item_data: ItemData = null, _qty: int = 1):
+	item_data = _item_data
+	quantity = _qty
+	
+
 func can_fully_merge_with(other_slot_data: SlotData) -> bool:
 	return item_data == other_slot_data.item_data \
 			&& item_data.stackable \
@@ -42,3 +49,14 @@ func set_quantity(value: int) -> void:
 	if quantity > 1 and not item_data.stackable:
 		quantity = 1
 		push_error("%s is not stackable" % item_data.name)
+
+# [qty, hash]
+func encode() -> Array:
+	return [quantity, item_data.get_hash()]
+	
+static func decode(encoded_data) -> SlotData:
+	var item_data: ItemData
+	var qty = encoded_data[0]
+	item_data = GameManager.get_item_by_hash(encoded_data[1])
+	return SlotData.new(item_data, qty)
+	

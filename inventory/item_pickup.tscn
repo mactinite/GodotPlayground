@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://b3vc7oaaq2crm"]
+
+[ext_resource type="Script" uid="uid://do2xe0gf34cgy" path="res://inventory/item_pickup.gd" id="1_ml2i6"]
+[ext_resource type="ArrayMesh" uid="uid://cx446lxkltnjc" path="res://assets/kenney_food-kit/Models/OBJ format/bag-flat.obj" id="2_icnl8"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_04tde"]
+points = PackedVector3Array(0.0488002, 0.0977197, 0.223097, -0.0290293, 0.0880353, -0.224579, -0.0293298, 0.0977299, -0.226886, -0.330159, 0.0979896, 0.163372, -0.0285603, 0.00226896, 0.179493, 0.183005, 0.17473, -0.155764, 0.330159, 0.0877247, -0.166686, -0.16835, 0.0133745, -0.151269, -0.183005, 0.17473, -0.155764, 0.0387004, 0.184843, 0.182249, 0.330159, 0.0979896, 0.163372, 0.16835, 0.0133745, -0.151269, -0.330159, 0.0877247, -0.166686, 0.192772, 0.0205616, 0.152586, -0.183005, 0.17473, 0.15245, -0.192772, 0.0205616, 0.152586, -0.019193, 0.00163742, -0.18407, 0.183005, 0.17473, 0.15245, -0.0288185, 0.184283, -0.184444, -0.0487997, 0.0977196, 0.223095, 0.0285603, 0.00226896, 0.179493, 0.02933, 0.09773, -0.226888, -0.330159, 0.0979896, -0.166686, -0.0387, 0.184842, 0.182248, 0.330159, 0.0877247, 0.163372, -0.330159, 0.0877247, 0.163372, 0.0770691, 0.184377, -0.175004, 0.330159, 0.0979896, -0.166686, 0.019193, 0.00163742, -0.18407, -0.0770691, 0.184377, -0.175004, 0.26135, 0.136401, 0.133849, -0.26135, 0.136401, 0.133849)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_yhnf8"]
+
+[node name="item_pickup" type="RigidBody3D" groups=["grab", "loot"]]
+collision_layer = 5
+script = ExtResource("1_ml2i6")
+metadata/verb = "Loot"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = ExtResource("2_icnl8")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("ConvexPolygonShape3D_04tde")
+
+[node name="Area3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("SphereShape3D_yhnf8")

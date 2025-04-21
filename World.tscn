@@ -8,6 +8,8 @@
 [ext_resource type="Script" uid="uid://wji23f4hiua6" path="res://inventory/inventory_data.gd" id="5_wygdx"]
 [ext_resource type="Script" uid="uid://ch1aa333rl54e" path="res://inventory/slot_data.gd" id="6_bah7m"]
 [ext_resource type="Resource" uid="uid://d386fdn2klu8g" path="res://inventory/resources/hot_dog.tres" id="7_bah7m"]
+[ext_resource type="PackedScene" uid="uid://b3vc7oaaq2crm" path="res://inventory/item_pickup.tscn" id="8_fv4w7"]
+[ext_resource type="Resource" uid="uid://b268chkpvfbmv" path="res://inventory/resources/apple.tres" id="9_fvag4"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bcbcq"]
 albedo_texture = ExtResource("1_2dftf")
@@ -22,35 +24,15 @@ uv1_triplanar = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_eu7l1"]
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_p1v5b"]
-properties/0/path = NodePath(".:replicated_position")
-properties/0/spawn = true
-properties/0/replication_mode = 1
-properties/1/path = NodePath(".:replicated_rotation")
-properties/1/spawn = true
-properties/1/replication_mode = 1
-properties/2/path = NodePath(".:replicated_linear_velocity")
-properties/2/spawn = true
-properties/2/replication_mode = 1
-properties/3/path = NodePath(".:replicated_angular_velocity")
-properties/3/spawn = true
-properties/3/replication_mode = 1
-
-[sub_resource type="Resource" id="Resource_fvag4"]
+[sub_resource type="Resource" id="Resource_bah7m"]
 script = ExtResource("6_bah7m")
 item_data = ExtResource("7_bah7m")
-quantity = 49
-metadata/_custom_type_script = "uid://ch1aa333rl54e"
-
-[sub_resource type="Resource" id="Resource_kva58"]
-script = ExtResource("6_bah7m")
-item_data = ExtResource("7_bah7m")
-quantity = 63
+quantity = 8
 metadata/_custom_type_script = "uid://ch1aa333rl54e"
 
 [sub_resource type="Resource" id="Resource_fv4w7"]
 script = ExtResource("5_wygdx")
-slot_datas = Array[ExtResource("6_bah7m")]([SubResource("Resource_fvag4"), null, null, null, null, null, null, SubResource("Resource_kva58"), null, null])
+slot_datas = Array[ExtResource("6_bah7m")]([SubResource("Resource_bah7m"), null, null, null, null, null])
 metadata/_custom_type_script = "uid://wji23f4hiua6"
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_2dftf"]
@@ -67,19 +49,13 @@ glow_enabled = true
 
 [node name="World" type="Node3D"]
 
-[node name="stage" type="Node3D" parent="."]
+[node name="stage" type="Node3D" parent="." groups=["stage"]]
 
 [node name="CSGBox3D" type="CSGBox3D" parent="stage"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 2, 11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.942139, 11)
 use_collision = true
 flip_faces = true
-size = Vector3(131, 6, 84)
-material = SubResource("StandardMaterial3D_bcbcq")
-
-[node name="CSGBox3D2" type="CSGBox3D" parent="stage"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.82036, -8.49187)
-use_collision = true
-size = Vector3(21, 4.75928, 2.99469)
+size = Vector3(131, 8.11572, 84)
 material = SubResource("StandardMaterial3D_bcbcq")
 
 [node name="Box" type="RigidBody3D" parent="stage" groups=["grab"]]
@@ -87,7 +63,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.75904, 0.768105, 0)
 collision_layer = 3
 collision_mask = 3
 script = ExtResource("4_p1v5b")
-metadata/Verb = "Grab"
+metadata/verb = "Grab"
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="stage/Box"]
 mesh = SubResource("BoxMesh_eu7l1")
@@ -96,13 +72,17 @@ surface_material_override/0 = SubResource("StandardMaterial3D_p1v5b")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="stage/Box"]
 shape = SubResource("BoxShape3D_eu7l1")
 
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="stage/Box"]
-replication_config = SubResource("SceneReplicationConfig_p1v5b")
-visibility_update_mode = 1
-
-[node name="Chest" parent="stage" groups=["loot"] instance=ExtResource("4_eu7l1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, -0.937155, 0)
+[node name="Chest" parent="stage" instance=ExtResource("4_eu7l1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -1, 0)
 inventory_data = SubResource("Resource_fv4w7")
+
+[node name="item_pickup" parent="stage" instance=ExtResource("8_fv4w7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.05631, 0, 0)
+item_data = ExtResource("9_fvag4")
+
+[node name="item_pickup2" parent="stage" instance=ExtResource("8_fv4w7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+item_data = ExtResource("7_bah7m")
 
 [node name="environment" type="Node3D" parent="."]
 

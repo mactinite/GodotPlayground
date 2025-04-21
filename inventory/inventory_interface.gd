@@ -1,5 +1,6 @@
 extends Control
 
+
 var grabbed_slot_data: SlotData
 var external_inventory_owner
 
@@ -25,6 +26,8 @@ func _ready() -> void:
 		toggle_inventory_interface()
 	)
 	
+	
+	
 
 func _physics_process(delta: float) -> void:
 	if grabbed_slot.visible:
@@ -35,7 +38,12 @@ func set_player_inventory_data(inventory_data: InventoryData)  -> void:
 	inventory_data.inventory_interact.connect(on_inventory_interact)
 	player_inventory.set_inventory_data(inventory_data)
 
-func set_external_inventory_data(_external_inventory_owner)  -> void:
+func set_external_inventory_data(_data: InventoryData)  -> void:
+	var inventory_data = _data
+	external_inventory.set_inventory_data(inventory_data)
+	
+
+func set_external_inventory_owner(_external_inventory_owner)  -> void:
 	external_inventory_owner = _external_inventory_owner;
 	var inventory_data = external_inventory_owner.inventory_data
 	
@@ -73,14 +81,38 @@ func update_grabbed_slot() -> void:
 	else:
 		grabbed_slot.hide()
 		
-func toggle_inventory_interface(external_inventory_owner = null) -> void:
+func toggle_inventory_interface(_external_inventory_owner = null) -> void:
 	self.visible = !self.visible;
 	if(self.visible):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	else:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	if(external_inventory_owner):
-		set_external_inventory_data(external_inventory_owner)
+		
+	if(_external_inventory_owner && self.visible):
+		set_external_inventory_owner(_external_inventory_owner)
 	else:
 		clear_external_inventroy()
 		
+		
+func _on_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton && \
+		event.is_pressed() && \
+		grabbed_slot_data:
+		
+		match event.button_index:
+			MOUSE_BUTTON_LEFT:
+				GameManager.player_drop_slot_data(grabbed_slot_data)
+				grabbed_slot_data = null
+			MOUSE_BUTTON_RIGHT:
+				GameManager.player_drop_slot_data(grabbed_slot_data.create_single_slot_data())
+				if(grabbed_slot_data.quantity < 1):
+					grabbed_slot_data = null
+		
+		update_grabbed_slot()
+
+func _on_visibility_changed() -> void:
+	if !visible && grabbed_slot_data:
+		GameManager.player_drop_slot_data(grabbed_slot_data)
+		grabbed_slot_data = null
+		update_grabbed_slot()
+	pass # Replace with function body.

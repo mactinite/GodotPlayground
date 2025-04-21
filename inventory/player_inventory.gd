@@ -1,6 +1,6 @@
 extends Node
 @export var inventory_data: InventoryData
-@onready var interaction_raycast: ShapeCast3D = $"../head/interaction_raycast"
+@onready var interaction_raycast: RayCast3D = $"../head/interaction_raycast"
 
 var ground_loot_selected;
 
@@ -25,5 +25,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		interact()
 		
 func interact() -> void:
-	if interaction_raycast.is_colliding() && interaction_raycast.get_collider(0).is_in_group("loot"):
-		interaction_raycast.get_collider(0).player_interact()
+	if interaction_raycast.is_colliding() && \
+	 interaction_raycast.get_collider().is_in_group("loot") && \
+	!interaction_raycast.get_collider().is_queued_for_deletion():
+		interaction_raycast.get_collider().player_interact()

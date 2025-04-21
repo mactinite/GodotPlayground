@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=3 uid="uid://b2oswvoke1mbg"]
+
+[ext_resource type="Script" uid="uid://dqc7h0fg0d3bg" path="res://inventory/inventory.gd" id="1_xorvs"]
+[ext_resource type="PackedScene" uid="uid://ywp7eghijcpd" path="res://inventory/slot.tscn" id="2_66vup"]
+
+[node name="hot_bar" type="PanelContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_xorvs")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="ItemGrid" type="GridContainer" parent="MarginContainer"]
+layout_mode = 2
+columns = 5
+
+[node name="Slot" parent="MarginContainer/ItemGrid" instance=ExtResource("2_66vup")]
+layout_mode = 2
+
+[node name="Slot2" parent="MarginContainer/ItemGrid" instance=ExtResource("2_66vup")]
+layout_mode = 2
+
+[node name="Slot3" parent="MarginContainer/ItemGrid" instance=ExtResource("2_66vup")]
+layout_mode = 2
+
+[node name="Slot4" parent="MarginContainer/ItemGrid" instance=ExtResource("2_66vup")]
+layout_mode = 2
+
+[node name="Slot5" parent="MarginContainer/ItemGrid" instance=ExtResource("2_66vup")]
+layout_mode = 2

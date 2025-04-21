@@ -27,7 +27,7 @@ const mouse_sens = 0.2
 var can_control = true
 
 func _ready():
-	set_multiplayer_authority(name.to_int())
+
 	
 	starting_height = head.position.y
 	crouch_collision_shape.disabled = true
@@ -36,6 +36,8 @@ func _ready():
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		camera_3d.set_current(true)
 		GameManager.local_player_object = self
+		var spawn = get_tree().get_nodes_in_group("spawn_point").pick_random()
+		global_position = spawn.global_position
 	else:
 		hud.hide()
 		camera_3d.set_current(false)
@@ -89,3 +91,8 @@ func movement(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, current_speed)
 
 	move_and_slide()
+
+
+func get_drop_position() -> Vector3:
+	var direction = -camera_3d.global_transform.basis.z
+	return camera_3d.global_position + direction

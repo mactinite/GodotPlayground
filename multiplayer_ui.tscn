@@ -61,10 +61,9 @@ size_flags_vertical = 4
 [node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
 custom_minimum_size = Vector2(0, 350)
 layout_mode = 2
-current_tab = 1
+current_tab = 0
 
 [node name="LAN" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -97,6 +96,7 @@ layout_mode = 2
 text = "Connect"
 
 [node name="Steam" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 

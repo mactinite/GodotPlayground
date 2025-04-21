@@ -26,6 +26,8 @@ Steamworks="*res://steamworks.gd"
 spawn_point=""
 grab=""
 loot=""
+stage=""
+world="root node for the instanced world"
 
 [input]
 
@@ -77,4 +79,9 @@ inventory={
 
 [physics]
 
+3d/run_on_separate_thread=true
+common/max_physics_steps_per_frame=6
+3d/physics_engine="Jolt Physics"
+jolt_physics_3d/simulation/velocity_steps=6
+3d/solver/solver_iterations=6
 common/physics_interpolation=true

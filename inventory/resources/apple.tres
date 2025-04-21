@@ -1,5 +1,6 @@
-[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3 uid="uid://b268chkpvfbmv"]
+[gd_resource type="Resource" script_class="ItemData" load_steps=4 format=3 uid="uid://b268chkpvfbmv"]
 
+[ext_resource type="ArrayMesh" uid="uid://bjq8naktyyby8" path="res://assets/kenney_food-kit/Models/OBJ format/apple.obj" id="1_lbur5"]
 [ext_resource type="Script" uid="uid://b8piwlhct7bt7" path="res://inventory/item_data.gd" id="1_lheu7"]
 [ext_resource type="Texture2D" uid="uid://dmca1k873io3a" path="res://assets/kenney_food-kit/Previews/apple.png" id="2_dtukw"]
 
@@ -9,4 +10,5 @@ name = "Apple"
 description = "An Apple, a little waxy though."
 stackable = true
 texture = ExtResource("2_dtukw")
+mesh = ExtResource("1_lbur5")
 metadata/_custom_type_script = "uid://b8piwlhct7bt7"
