@@ -1,10 +1,10 @@
 [gd_scene load_steps=20 format=3 uid="uid://xv1k3wuhqavi"]
 
 [ext_resource type="Texture2D" uid="uid://b8118oep1e568" path="res://kenney_prototype-textures/PNG/Dark/texture_07.png" id="1_2dftf"]
-[ext_resource type="Texture2D" uid="uid://j6ehl8lui555" path="res://kloofendal_48d_partly_cloudy_puresky_4k.hdr" id="1_c6gwx"]
+[ext_resource type="Texture2D" uid="uid://j6ehl8lui555" path="res://assets/kloofendal_48d_partly_cloudy_puresky_4k.hdr" id="1_c6gwx"]
 [ext_resource type="Texture2D" uid="uid://drho6vpg1tfpa" path="res://kenney_prototype-textures/PNG/Orange/texture_02.png" id="2_js7pq"]
 [ext_resource type="PackedScene" uid="uid://iiil5nle6p02" path="res://inventory/chest.tscn" id="4_eu7l1"]
-[ext_resource type="Script" uid="uid://cci0lp62aunmc" path="res://network_rb.gd" id="4_p1v5b"]
+[ext_resource type="Script" uid="uid://cci0lp62aunmc" path="res://multiplayer/network_rb.gd" id="4_p1v5b"]
 [ext_resource type="Script" uid="uid://wji23f4hiua6" path="res://inventory/inventory_data.gd" id="5_wygdx"]
 [ext_resource type="Script" uid="uid://ch1aa333rl54e" path="res://inventory/slot_data.gd" id="6_bah7m"]
 [ext_resource type="Resource" uid="uid://d386fdn2klu8g" path="res://inventory/resources/hot_dog.tres" id="7_bah7m"]

@@ -1,37 +1,40 @@
-[gd_scene load_steps=8 format=3 uid="uid://gas7lotpits8"]
+[gd_scene load_steps=13 format=3 uid="uid://gas7lotpits8"]
 
-[ext_resource type="PackedScene" uid="uid://ca4nsesn2ilu7" path="res://multiplayer_ui.tscn" id="1_ig7tw"]
-[ext_resource type="Script" uid="uid://603hhk4pggmc" path="res://player_manager.gd" id="2_0xm2m"]
-[ext_resource type="PackedScene" uid="uid://c8b00seg1kw7x" path="res://player_controller.tscn" id="3_h2yge"]
+[ext_resource type="Script" uid="uid://dayjsygbe8t0k" path="res://core/main.gd" id="1_5vw27"]
+[ext_resource type="Script" uid="uid://603hhk4pggmc" path="res://players/player_spawner.gd" id="2_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://c8b00seg1kw7x" path="res://players/player_controller.tscn" id="3_h2yge"]
 [ext_resource type="PackedScene" uid="uid://bfoavfm47sjp8" path="res://inventory/inventory.tscn" id="4_1bvp3"]
+[ext_resource type="Script" uid="uid://t6h2a4visf66" path="res://map_spawner.gd" id="4_dg77c"]
 [ext_resource type="Script" uid="uid://bf745pmv23qj0" path="res://inventory/inventory_interface.gd" id="4_lquwl"]
 [ext_resource type="PackedScene" uid="uid://ywp7eghijcpd" path="res://inventory/slot.tscn" id="5_7mycd"]
 [ext_resource type="PackedScene" uid="uid://b2oswvoke1mbg" path="res://inventory/hot_bar.tscn" id="7_272bh"]
+[ext_resource type="Script" uid="uid://c0qfcyeqfduxh" path="res://menus.gd" id="8_5vw27"]
+[ext_resource type="Script" uid="uid://g5g75s74f5na" path="res://lan_interface.gd" id="9_kek77"]
+[ext_resource type="Script" uid="uid://2uxci3x7yf4n" path="res://steam_connect_interface.gd" id="10_4c57u"]
+[ext_resource type="Script" uid="uid://d0u1hxr2kcaqq" path="res://lobby_interface.gd" id="11_efxa6"]
 
-[node name="Root" type="Node3D"]
+[node name="Main" type="Node3D" node_paths=PackedStringArray("menus", "player_spawner", "map_spawner")]
+script = ExtResource("1_5vw27")
+menus = NodePath("UI/Menus")
+player_spawner = NodePath("Player Spawner")
+map_spawner = NodePath("Map Spawner")
 
 [node name="Map" type="Node3D" parent="." groups=["world"]]
 
-[node name="Players" type="Node3D" parent="." node_paths=PackedStringArray("spawner")]
-script = ExtResource("2_0xm2m")
-player_scene = ExtResource("3_h2yge")
-spawner = NodePath("../Player Spawner")
+[node name="Players" type="Node3D" parent="."]
 
 [node name="Map Spawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("uid://xv1k3wuhqavi", "uid://b3vc7oaaq2crm")
+_spawnable_scenes = PackedStringArray("uid://xv1k3wuhqavi")
 spawn_path = NodePath("../Map")
+script = ExtResource("4_dg77c")
 
 [node name="Player Spawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("uid://c8b00seg1kw7x")
 spawn_path = NodePath("../Players")
+script = ExtResource("2_0xm2m")
+player_scene = ExtResource("3_h2yge")
 
 [node name="UI" type="CanvasLayer" parent="."]
-
-[node name="Multiplayer UI" parent="UI" node_paths=PackedStringArray("player_spawner", "map_spawner", "map", "players") instance=ExtResource("1_ig7tw")]
-player_spawner = NodePath("../../Player Spawner")
-map_spawner = NodePath("../../Map Spawner")
-map = NodePath("../../Map")
-players = NodePath("../../Players")
 
 [node name="InventoryInterface" type="Control" parent="UI"]
 visible = false
@@ -97,5 +100,275 @@ offset_top = 52.0
 offset_right = 75.0
 offset_bottom = 124.0
 
+[node name="Menus" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("8_5vw27")
+
+[node name="Main" type="Control" parent="UI/Menus"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Start" type="VBoxContainer" parent="UI/Menus/Main"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -87.0
+offset_top = -67.0
+offset_right = 87.0
+offset_bottom = 67.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+metadata/_tab_index = 1
+
+[node name="LAN" type="Button" parent="UI/Menus/Main/Start"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "LAN"
+
+[node name="STEAM" type="Button" parent="UI/Menus/Main/Start"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "STEAM"
+
+[node name="EXIT" type="Button" parent="UI/Menus/Main/Start"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "EXIT"
+
+[node name="LAN" type="Panel" parent="UI/Menus" node_paths=PackedStringArray("parent_menus")]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -178.5
+offset_top = -155.5
+offset_right = 178.5
+offset_bottom = 155.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_kek77")
+parent_menus = NodePath("..")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/Menus/LAN"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Menus/LAN/MarginContainer"]
+layout_mode = 2
+alignment = 1
+metadata/_tab_index = 0
+
+[node name="LineEdit_IP" type="LineEdit" parent="UI/Menus/LAN/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "127.0.0.1"
+placeholder_text = "ip"
+
+[node name="LineEdit_Port" type="LineEdit" parent="UI/Menus/LAN/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "8910"
+placeholder_text = "port"
+
+[node name="Space" type="Control" parent="UI/Menus/LAN/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+
+[node name="Btn_Host" type="Button" parent="UI/Menus/LAN/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Host"
+
+[node name="Btn_Connect" type="Button" parent="UI/Menus/LAN/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Connect"
+
+[node name="Btn_Back" type="Button" parent="UI/Menus/LAN/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Back"
+
+[node name="STEAM" type="Control" parent="UI/Menus" node_paths=PackedStringArray("parentMenus")]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("10_4c57u")
+parentMenus = NodePath("..")
+
+[node name="Start" type="VBoxContainer" parent="UI/Menus/STEAM"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -87.0
+offset_top = -67.0
+offset_right = 87.0
+offset_bottom = 67.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+metadata/_tab_index = 1
+
+[node name="create_lobby" type="Button" parent="UI/Menus/STEAM/Start"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Host"
+
+[node name="show_lobbies" type="Button" parent="UI/Menus/STEAM/Start"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Lobbies"
+
+[node name="back" type="Button" parent="UI/Menus/STEAM/Start"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Back"
+
+[node name="LobbiesPanel" type="Panel" parent="UI/Menus/STEAM"]
+visible = false
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 107.0
+offset_top = -133.0
+offset_right = 357.0
+offset_bottom = 133.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/Menus/STEAM/LobbiesPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="LobbiesList" type="VBoxContainer" parent="UI/Menus/STEAM/LobbiesPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LOBBY" type="Control" parent="UI/Menus" node_paths=PackedStringArray("parent_menus")]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("11_efxa6")
+parent_menus = NodePath("..")
+
+[node name="Lobby_Members" type="VBoxContainer" parent="UI/Menus/LOBBY"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -181.0
+offset_top = -66.5
+offset_right = 181.0
+offset_bottom = 66.5
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_tab_index = 1
+
+[node name="Name_label" type="Label" parent="UI/Menus/LOBBY/Lobby_Members"]
+layout_mode = 2
+text = "Mactinite"
+horizontal_alignment = 1
+
+[node name="Name_label2" type="Label" parent="UI/Menus/LOBBY/Lobby_Members"]
+layout_mode = 2
+text = "PandaChanMan"
+horizontal_alignment = 1
+
+[node name="Name_label3" type="Label" parent="UI/Menus/LOBBY/Lobby_Members"]
+layout_mode = 2
+text = "winthrop"
+horizontal_alignment = 1
+
+[node name="Name_label4" type="Label" parent="UI/Menus/LOBBY/Lobby_Members"]
+layout_mode = 2
+text = "shamlesskier"
+horizontal_alignment = 1
+
+[node name="Start" type="Button" parent="UI/Menus/LOBBY"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -395.0
+offset_top = -213.0
+offset_right = -244.0
+offset_bottom = -149.0
+grow_horizontal = 0
+grow_vertical = 0
+disabled = true
+text = "Start Game"
+
+[node name="StatusLabel" type="Label" parent="UI/Menus/LOBBY"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -323.0
+offset_top = 124.0
+offset_right = 323.0
+offset_bottom = 194.0
+grow_horizontal = 2
+text = "Waiting for host"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [connection signal="gui_input" from="UI/InventoryInterface" to="UI/InventoryInterface" method="_on_gui_input"]
 [connection signal="visibility_changed" from="UI/InventoryInterface" to="UI/InventoryInterface" method="_on_visibility_changed"]
+[connection signal="button_down" from="UI/Menus/Main/Start/LAN" to="UI/Menus" method="_on_lan_button_down"]
+[connection signal="button_down" from="UI/Menus/Main/Start/STEAM" to="UI/Menus" method="_on_steam_button_down"]
+[connection signal="button_down" from="UI/Menus/Main/Start/EXIT" to="UI/Menus" method="_on_exit_button_down"]
+[connection signal="pressed" from="UI/Menus/STEAM/Start/create_lobby" to="UI/Menus/STEAM" method="_on_create_lobby_pressed"]
+[connection signal="pressed" from="UI/Menus/STEAM/Start/show_lobbies" to="UI/Menus/STEAM" method="_on_show_lobbies_pressed"]
+[connection signal="pressed" from="UI/Menus/STEAM/Start/back" to="UI/Menus/STEAM" method="_on_back_pressed"]
+[connection signal="visibility_changed" from="UI/Menus/LOBBY" to="UI/Menus/LOBBY" method="_on_visibility_changed"]
+[connection signal="pressed" from="UI/Menus/LOBBY/Start" to="UI/Menus/LOBBY" method="_on_start_pressed"]

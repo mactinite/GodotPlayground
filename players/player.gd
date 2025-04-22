@@ -27,15 +27,16 @@ const mouse_sens = 0.2
 var can_control = true
 
 func _ready():
-
-	
 	starting_height = head.position.y
 	crouch_collision_shape.disabled = true
+	
+	if has_meta("id") && GameState.players.has(get_meta("id")):
+		GameState.players[get_meta("id")].player_node = self
 	
 	if is_multiplayer_authority():
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		camera_3d.set_current(true)
-		GameManager.local_player_object = self
+		GameState.local_player_object = self
 		var spawn = get_tree().get_nodes_in_group("spawn_point").pick_random()
 		global_position = spawn.global_position
 	else:

@@ -6,7 +6,7 @@ signal toggle_inventory(external_inventory_owner)
 
 func _ready() -> void:
 	toggle_inventory.connect(func(owner):
-		GameManager.toggle_inventory(owner)
+		InventoryManager.toggle_inventory(owner)
 		request_inventory_data.rpc_id(1)
 	)
 	
@@ -20,7 +20,7 @@ func _ready() -> void:
 	)
 	
 	inventory_data.on_remote_inventory_changes.connect(func (data: InventoryData):
-		GameManager.on_external_inventory_update.emit(data)
+		SignalBus.on_external_inventory_update.emit(data)
 	)
 
 @rpc("any_peer", "call_local")

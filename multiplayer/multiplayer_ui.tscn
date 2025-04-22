@@ -1,0 +1,333 @@
+[gd_scene load_steps=3 format=3 uid="uid://bnkqm14b4tm5n"]
+
+[ext_resource type="PackedScene" uid="uid://xv1k3wuhqavi" path="res://World.tscn" id="2_qgtrb"]
+
+[sub_resource type="GDScript" id="GDScript_s54ep"]
+script/source = "extends Control
+@export var address = \"127.0.0.1\"
+@export var port = 8910
+@export var gameScene: PackedScene;
+@export var player_spawner: MultiplayerSpawner
+@export var map_spawner: MultiplayerSpawner
+@export var map: Node3D 
+@export var players: Node3D
+
+@onready var start: Button = $VBoxContainer/Start
+
+@onready var label: Label = $Label
+@onready var members: Label = $Members
+@onready var create_lobby: Button = $VBoxContainer/TabContainer/Steam/create_lobby
+@onready var invite_friends: Button = $\"VBoxContainer/TabContainer/Steam/LobbyView/Invite Friends\"
+
+@onready var show_lobbies: Button = $VBoxContainer/TabContainer/Steam/show_lobbies
+@onready var lobby_view: HFlowContainer = $VBoxContainer/TabContainer/Steam/LobbyView
+@onready var lobbies_list: VBoxContainer = $LobbiesPanel/ScrollContainer/LobbiesList
+@onready var lobbies_panel: Panel = $LobbiesPanel
+
+@onready var enet_connect_button: Button = $VBoxContainer/TabContainer/LAN/connect
+@onready var enet_host_button: Button = $VBoxContainer/TabContainer/LAN/Host
+@onready var address_input: LineEdit = $VBoxContainer/TabContainer/LAN/ip
+@onready var port_input: LineEdit = $VBoxContainer/TabContainer/LAN/port
+
+var peer
+var lobbiesListOpen = false
+var scene
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	map_spawner.add_spawnable_scene(gameScene.resource_path)
+	label.text = Steamworks.steam_username
+	
+	Lobby.lobby_created.connect(func(connect: int, lobby_id: int):
+		lobby_view.show()
+		show_lobbies.hide()
+		pass
+	)
+	
+	Lobby.lobby_joined.connect(func (lobby: int, permissions: int, locked: bool, response: int):
+		if Steam.getLobbyOwner(lobby) != Steamworks.steam_id:
+			lobby_view.show()
+			connect_steam_socket(Steam.getLobbyOwner(lobby))
+		pass
+	)
+	
+	Lobby.lobby_match_list.connect(func(lobby_list):
+		for lobby in lobby_list:
+			var button = Button.new()
+			var owner = Steam.getLobbyOwner(lobby)
+			var name = Steam.getLobbyData(lobby, \"name\")
+
+			button.text = str(name) + \" : \"+ str(owner)
+			
+			lobbies_list.add_child(button)
+			button.connect(\"pressed\", Callable(self, \"join_lobby\").bind(lobby))
+	)
+	
+	Lobby.lobby_kicked.connect(func():
+		pass
+	)
+
+
+	
+
+func reset():
+	if scene != null:
+		scene.queue_free()
+		scene = null
+	self.show()
+	lobbies_panel.hide()
+	lobbiesListOpen = false;
+	create_lobby.show()
+	show_lobbies.show()
+	address_input.editable = true
+	port_input.editable = true
+	lobby_view.hide()
+	enet_host_button.show()
+	enet_connect_button.show()
+	if(Lobby.lobby_id > 0):
+		Lobby.leave_lobby()
+		Lobby.lobby_members.clear()
+	list_members()
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	GameState.players.clear()
+
+func join_lobby(lobby: int):
+	_on_show_lobbies_pressed()
+	Lobby.join_lobby(lobby)
+ 
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(_delta: float) -> void:
+	pass
+	
+
+# --- RPCs
+
+@rpc(\"authority\", \"call_local\")
+func start_game():
+	if multiplayer.is_server():
+		scene = gameScene.instantiate()
+		map.add_child(scene)
+		players.spawn_players()
+	self.hide()
+	GameManager.start_game()
+
+
+	
+		
+
+func connect_steam_socket(steam_id: int):
+	create_lobby.hide()
+	peer = SteamMultiplayerPeer.new()
+	peer.create_client(steam_id, 0)
+	multiplayer.multiplayer_peer = peer
+	print(\"Waiting for host\")
+	pass
+	
+func create_steam_socket():
+	create_lobby.hide()
+	start.disabled = false
+	peer = SteamMultiplayerPeer.new()
+	peer.create_host(0)
+	multiplayer.multiplayer_peer = peer
+	send_player_info(Steamworks.steam_username, multiplayer.get_unique_id())
+	Lobby.create_lobby()
+	print(\"Waiting for players\")
+	
+func host_enet():
+	enet_host_button.hide()
+	$VBoxContainer/TabContainer/LAN/ip.editable = false
+	$VBoxContainer/TabContainer/LAN/port.editable = false
+	$VBoxContainer/TabContainer/LAN/connect.hide()
+	start.disabled = false
+	peer = ENetMultiplayerPeer.new()
+	peer.create_server(port_input.text.to_int())
+	multiplayer.multiplayer_peer = peer
+	send_player_info(Steamworks.steam_username, multiplayer.get_unique_id())
+	print(\"Waiting for players\")
+	
+func join_enet():
+	enet_host_button.hide()
+	peer = ENetMultiplayerPeer.new()
+	address = address_input.text
+	port = port_input.text.to_int()
+	peer.create_client(address,port)
+	multiplayer.multiplayer_peer = peer
+	print(\"Waiting for host\")
+	
+func _on_start_button_down():
+	start_game.rpc()
+	pass
+
+func _on_show_lobbies_pressed():
+	if !lobbiesListOpen:
+		for n in lobbies_list.get_children():
+			lobbies_list.remove_child(n)
+			n.queue_free()
+			
+		Lobby._on_open_lobby_list_pressed()
+		lobbies_panel.show()
+		lobbiesListOpen = true
+	else:
+		lobbies_panel.hide()
+		lobbiesListOpen = false
+	pass
+"
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_s54ep")
+address = null
+port = null
+gameScene = ExtResource("2_qgtrb")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+offset_top = 312.0
+offset_right = 1152.0
+offset_bottom = 335.0
+
+[node name="Members" type="Label" parent="."]
+layout_mode = 2
+offset_top = 312.0
+offset_right = 1152.0
+offset_bottom = 335.0
+text = "-"
+
+[node name="LobbiesPanel" type="Panel" parent="."]
+custom_minimum_size = Vector2(250, 250)
+layout_mode = 2
+offset_left = 902.0
+offset_top = 199.0
+offset_right = 1152.0
+offset_bottom = 449.0
+size_flags_horizontal = 8
+size_flags_vertical = 4
+
+[node name="ScrollContainer" type="ScrollContainer" parent="LobbiesPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LobbiesList" type="VBoxContainer" parent="LobbiesPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(350, 450)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -175.0
+offset_top = -225.0
+offset_right = 175.0
+offset_bottom = 225.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 350)
+layout_mode = 2
+current_tab = 1
+
+[node name="LAN" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Space2" type="Control" parent="VBoxContainer/TabContainer/LAN"]
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+
+[node name="ip" type="LineEdit" parent="VBoxContainer/TabContainer/LAN"]
+layout_mode = 2
+text = "127.0.0.1"
+placeholder_text = "ip"
+
+[node name="port" type="LineEdit" parent="VBoxContainer/TabContainer/LAN"]
+layout_mode = 2
+text = "8910"
+placeholder_text = "port"
+
+[node name="Space" type="Control" parent="VBoxContainer/TabContainer/LAN"]
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+
+[node name="Host" type="Button" parent="VBoxContainer/TabContainer/LAN"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Host"
+
+[node name="connect" type="Button" parent="VBoxContainer/TabContainer/LAN"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Connect"
+
+[node name="Steam" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Space" type="Control" parent="VBoxContainer/TabContainer/Steam"]
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+
+[node name="create_lobby" type="Button" parent="VBoxContainer/TabContainer/Steam"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Host"
+
+[node name="show_lobbies" type="Button" parent="VBoxContainer/TabContainer/Steam"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Lobbies"
+
+[node name="LobbyView" type="HFlowContainer" parent="VBoxContainer/TabContainer/Steam"]
+visible = false
+layout_mode = 2
+
+[node name="Lobby" type="Panel" parent="VBoxContainer/TabContainer/Steam/LobbyView"]
+clip_contents = true
+custom_minimum_size = Vector2(300, 200)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VFlowContainer" type="VFlowContainer" parent="VBoxContainer/TabContainer/Steam/LobbyView/Lobby"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 27.0
+offset_top = 16.0
+offset_right = -27.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Invite Friends" type="Button" parent="VBoxContainer/TabContainer/Steam/LobbyView"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Open Friends"
+
+[node name="Start" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+disabled = true
+text = "Start"
+
+[connection signal="button_down" from="VBoxContainer/TabContainer/LAN/Host" to="." method="host_enet"]
+[connection signal="button_down" from="VBoxContainer/TabContainer/LAN/connect" to="." method="join_enet"]
+[connection signal="button_down" from="VBoxContainer/TabContainer/Steam/create_lobby" to="." method="create_steam_socket"]
+[connection signal="button_down" from="VBoxContainer/TabContainer/Steam/show_lobbies" to="." method="_on_show_lobbies_pressed"]
+[connection signal="button_down" from="VBoxContainer/TabContainer/Steam/LobbyView/Invite Friends" to="." method="_on_friends_button_pressed"]
+[connection signal="button_down" from="VBoxContainer/Start" to="." method="_on_start_button_down"]

@@ -9,7 +9,7 @@ extends NetworkRigidBody3D
 
 func _ready() -> void:
 	if is_multiplayer_authority():
-		item_hash = GameManager.get_item_hash(item_data)
+		item_hash = InventoryManager.get_item_hash(item_data)
 		mesh_instance_3d.mesh = item_data.mesh;
 		collision_shape_3d.make_convex_from_siblings()
 	else:
@@ -17,7 +17,7 @@ func _ready() -> void:
 		
 func set_item_data_by_id(hash: String) -> void:
 	if item_hash.is_empty(): return
-	var _item_data = GameManager.get_item_by_hash(hash)
+	var _item_data = InventoryManager.get_item_by_hash(hash)
 	item_data = _item_data
 	mesh_instance_3d.mesh = _item_data.mesh;
 	collision_shape_3d.make_convex_from_siblings()
@@ -25,10 +25,10 @@ func set_item_data_by_id(hash: String) -> void:
 func set_slot_data(slot_data: SlotData):
 	item_data = slot_data.item_data
 	item_qty = slot_data.quantity
-	item_hash = GameManager.get_item_hash(item_data)
+	item_hash = InventoryManager.get_item_hash(item_data)
 
 func player_interact() -> void:
-	if GameManager.player_pickup_slot_data(SlotData.new(item_data, item_qty)):
+	if InventoryManager.player_pickup_slot_data(SlotData.new(item_data, item_qty)):
 		self.queue_free()
 	pass
 

@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=3 uid="uid://dj8stt8jwluph"]
 
-[ext_resource type="Script" uid="uid://i48ae2p7id5y" path="res://player.gd" id="1_5waqi"]
-[ext_resource type="Script" uid="uid://cfhlcaae8v74w" path="res://player_grab.gd" id="2_2l2yn"]
-[ext_resource type="Script" uid="uid://kq6kdi1u0vlc" path="res://hud.gd" id="3_u1uee"]
+[ext_resource type="Script" uid="uid://i48ae2p7id5y" path="res://players/player.gd" id="1_5waqi"]
+[ext_resource type="Script" uid="uid://cfhlcaae8v74w" path="res://players/player_grab.gd" id="2_2l2yn"]
+[ext_resource type="Script" uid="uid://kq6kdi1u0vlc" path="res://hud/hud.gd" id="3_u1uee"]
 [ext_resource type="Texture2D" uid="uid://dyttff6d2nf6x" path="res://kenney_cursor-pixel-pack/Tiles/tile_0045.png" id="4_ctvpk"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bcbcq"]

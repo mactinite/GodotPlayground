@@ -17,9 +17,21 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-GameManager="*res://game_manager.gd"
-Lobby="*res://lobby.gd"
-Steamworks="*res://steamworks.gd"
+GameState="*res://core/game_state.gd"
+Global="*res://core/global.gd"
+SignalBus="*res://core/signal_bus.gd"
+Steamworks="*res://steam/steamworks.gd"
+Lobby="*res://multiplayer/lobby.gd"
+GameManager="*res://core/game_manager.gd"
+Constants="*res://core/constants.gd"
+InventoryManager="*res://inventory/inventory_manager.gd"
+NetworkManager="*res://multiplayer/network_manager.gd"
+SceneManager="*res://core/scene_manager.gd"
+
+[display]
+
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [global_group]
 

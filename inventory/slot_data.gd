@@ -57,6 +57,6 @@ func encode() -> Array:
 static func decode(encoded_data) -> SlotData:
 	var item_data: ItemData
 	var qty = encoded_data[0]
-	item_data = GameManager.get_item_by_hash(encoded_data[1])
+	item_data = InventoryManager.get_item_by_hash(encoded_data[1])
 	return SlotData.new(item_data, qty)
 	

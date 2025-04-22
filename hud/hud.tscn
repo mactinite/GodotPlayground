@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cb03d1o62chyj"]
 
-[ext_resource type="Script" uid="uid://kq6kdi1u0vlc" path="res://hud.gd" id="1_64ctp"]
-[ext_resource type="Texture2D" uid="uid://dyttff6d2nf6x" path="res://kenney_cursor-pixel-pack/Tiles/tile_0045.png" id="2_8sq4i"]
+[ext_resource type="Script" uid="uid://kq6kdi1u0vlc" path="res://hud/hud.gd" id="1_2gk58"]
+[ext_resource type="Texture2D" uid="uid://dyttff6d2nf6x" path="res://kenney_cursor-pixel-pack/Tiles/tile_0045.png" id="2_318vg"]
 
 [node name="HUD" type="Control"]
 layout_mode = 3
@@ -10,7 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_64ctp")
+script = ExtResource("1_2gk58")
 
 [node name="Reticle" type="TextureRect" parent="."]
 texture_filter = 1
@@ -29,7 +29,7 @@ grow_vertical = 2
 pivot_offset = Vector2(8, 8)
 size_flags_horizontal = 4
 size_flags_vertical = 4
-texture = ExtResource("2_8sq4i")
+texture = ExtResource("2_318vg")
 stretch_mode = 2
 
 [node name="SafezoneContainer" type="AspectRatioContainer" parent="."]

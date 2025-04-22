@@ -1,6 +1,5 @@
 extends Control
 
-
 var grabbed_slot_data: SlotData
 var external_inventory_owner
 
@@ -10,25 +9,22 @@ var external_inventory_owner
 
 
 func _ready() -> void:
-	GameManager.on_player_inventory_toggle.connect(func (external_inventory_owner = null):
+	SignalBus.on_player_inventory_toggle.connect(func (external_inventory_owner = null):
 		toggle_inventory_interface(external_inventory_owner)
 	)
 	
-	GameManager.on_player_inventory_update.connect(func (data: InventoryData):
+	SignalBus.on_player_inventory_update.connect(func (data: InventoryData):
 		set_player_inventory_data(data)
 	)
 	
-	GameManager.on_external_inventory_update.connect(func (data: InventoryData):
+	SignalBus.on_external_inventory_update.connect(func (data: InventoryData):
 		set_external_inventory_data(data)
 	)
 	
-	GameManager.on_external_inventory_toggle.connect(func ():
+	SignalBus.on_external_inventory_toggle.connect(func ():
 		toggle_inventory_interface()
 	)
 	
-	
-	
-
 func _physics_process(delta: float) -> void:
 	if grabbed_slot.visible:
 		grabbed_slot.global_position = get_global_mouse_position() + Vector2(5,	5)
@@ -101,10 +97,10 @@ func _on_gui_input(event: InputEvent) -> void:
 		
 		match event.button_index:
 			MOUSE_BUTTON_LEFT:
-				GameManager.player_drop_slot_data(grabbed_slot_data)
+				InventoryManager.player_drop_slot_data(grabbed_slot_data)
 				grabbed_slot_data = null
 			MOUSE_BUTTON_RIGHT:
-				GameManager.player_drop_slot_data(grabbed_slot_data.create_single_slot_data())
+				InventoryManager.player_drop_slot_data(grabbed_slot_data.create_single_slot_data())
 				if(grabbed_slot_data.quantity < 1):
 					grabbed_slot_data = null
 		
@@ -112,7 +108,7 @@ func _on_gui_input(event: InputEvent) -> void:
 
 func _on_visibility_changed() -> void:
 	if !visible && grabbed_slot_data:
-		GameManager.player_drop_slot_data(grabbed_slot_data)
+		InventoryManager.player_drop_slot_data(grabbed_slot_data)
 		grabbed_slot_data = null
 		update_grabbed_slot()
 	pass # Replace with function body.

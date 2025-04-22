@@ -8,18 +8,18 @@ func _ready() -> void:
 	if !is_multiplayer_authority():
 		return
 	
-	GameManager.set_inventory(inventory_data)
+	InventoryManager.set_inventory(inventory_data)
 	
 func update_player_inventory(data: InventoryData):
 	inventory_data = data
-	GameManager.set_inventory(inventory_data)
+	InventoryManager.set_inventory(inventory_data)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if !is_multiplayer_authority():
 		return
 	
 	if Input.is_action_just_pressed("inventory"):
-		GameManager.toggle_inventory()
+		InventoryManager.toggle_inventory()
 		
 	if Input.is_action_just_pressed("interact"):
 		interact()

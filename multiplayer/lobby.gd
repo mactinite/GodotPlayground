@@ -9,7 +9,7 @@ var lobby_vote_kick: bool = false
 signal lobby_created
 signal lobby_invite
 signal lobby_joined
-signal lobby_match_list
+signal lobby_match_list(Array)
 signal lobby_kicked
 
 # Called when the node enters the scene tree for the first time.
