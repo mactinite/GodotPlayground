@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://xv1k3wuhqavi"]
+[gd_scene load_steps=18 format=3 uid="uid://xv1k3wuhqavi"]
 
 [ext_resource type="Texture2D" uid="uid://b8118oep1e568" path="res://kenney_prototype-textures/PNG/Dark/texture_07.png" id="1_2dftf"]
 [ext_resource type="Texture2D" uid="uid://j6ehl8lui555" path="res://assets/kloofendal_48d_partly_cloudy_puresky_4k.hdr" id="1_c6gwx"]
@@ -8,8 +8,6 @@
 [ext_resource type="Script" uid="uid://wji23f4hiua6" path="res://inventory/inventory_data.gd" id="5_wygdx"]
 [ext_resource type="Script" uid="uid://ch1aa333rl54e" path="res://inventory/slot_data.gd" id="6_bah7m"]
 [ext_resource type="Resource" uid="uid://d386fdn2klu8g" path="res://inventory/resources/hot_dog.tres" id="7_bah7m"]
-[ext_resource type="PackedScene" uid="uid://b3vc7oaaq2crm" path="res://inventory/item_pickup.tscn" id="8_fv4w7"]
-[ext_resource type="Resource" uid="uid://b268chkpvfbmv" path="res://inventory/resources/apple.tres" id="9_fvag4"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bcbcq"]
 albedo_texture = ExtResource("1_2dftf")
@@ -59,7 +57,7 @@ size = Vector3(131, 8.11572, 84)
 material = SubResource("StandardMaterial3D_bcbcq")
 
 [node name="Box" type="RigidBody3D" parent="stage" groups=["grab"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.75904, 0.768105, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.75904, -2.61572, 0)
 collision_layer = 3
 collision_mask = 3
 script = ExtResource("4_p1v5b")
@@ -73,16 +71,8 @@ surface_material_override/0 = SubResource("StandardMaterial3D_p1v5b")
 shape = SubResource("BoxShape3D_eu7l1")
 
 [node name="Chest" parent="stage" instance=ExtResource("4_eu7l1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, -1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -3.11572, 1)
 inventory_data = SubResource("Resource_fv4w7")
-
-[node name="item_pickup" parent="stage" instance=ExtResource("8_fv4w7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.05631, 0, 0)
-item_data = ExtResource("9_fvag4")
-
-[node name="item_pickup2" parent="stage" instance=ExtResource("8_fv4w7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
-item_data = ExtResource("7_bah7m")
 
 [node name="environment" type="Node3D" parent="."]
 

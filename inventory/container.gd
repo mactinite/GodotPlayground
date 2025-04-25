@@ -30,7 +30,7 @@ func send_inventory_update(serialized_inventory: Array):
 @rpc("any_peer")
 func request_inventory_data():
 	if is_multiplayer_authority():
-		send_inventory_update(inventory_data.serialize())
+		send_inventory_update.rpc(inventory_data.serialize())
 
 func player_interact() -> void:
 	toggle_inventory.emit(self)
