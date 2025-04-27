@@ -1,13 +1,9 @@
-[gd_scene load_steps=13 format=3 uid="uid://gas7lotpits8"]
+[gd_scene load_steps=9 format=3 uid="uid://gas7lotpits8"]
 
 [ext_resource type="Script" uid="uid://dayjsygbe8t0k" path="res://core/main.gd" id="1_5vw27"]
 [ext_resource type="Script" uid="uid://603hhk4pggmc" path="res://players/player_spawner.gd" id="2_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://c8b00seg1kw7x" path="res://players/player_controller.tscn" id="3_h2yge"]
-[ext_resource type="PackedScene" uid="uid://bfoavfm47sjp8" path="res://inventory/inventory.tscn" id="4_1bvp3"]
 [ext_resource type="Script" uid="uid://t6h2a4visf66" path="res://map_spawner.gd" id="4_dg77c"]
-[ext_resource type="Script" uid="uid://bf745pmv23qj0" path="res://inventory/inventory_interface.gd" id="4_lquwl"]
-[ext_resource type="PackedScene" uid="uid://ywp7eghijcpd" path="res://inventory/slot.tscn" id="5_7mycd"]
-[ext_resource type="PackedScene" uid="uid://b2oswvoke1mbg" path="res://inventory/hot_bar.tscn" id="7_272bh"]
 [ext_resource type="Script" uid="uid://c0qfcyeqfduxh" path="res://menus.gd" id="8_5vw27"]
 [ext_resource type="Script" uid="uid://g5g75s74f5na" path="res://lan_interface.gd" id="9_kek77"]
 [ext_resource type="Script" uid="uid://2uxci3x7yf4n" path="res://steam_connect_interface.gd" id="10_4c57u"]
@@ -35,70 +31,6 @@ script = ExtResource("2_0xm2m")
 player_scene = ExtResource("3_h2yge")
 
 [node name="UI" type="CanvasLayer" parent="."]
-
-[node name="InventoryInterface" type="Control" parent="UI"]
-visible = false
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-script = ExtResource("4_lquwl")
-
-[node name="PlayerInventory" parent="UI/InventoryInterface" instance=ExtResource("4_1bvp3")]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -192.0
-offset_top = -277.0
-offset_right = 192.0
-offset_bottom = -121.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="ExternalInventory" parent="UI/InventoryInterface" instance=ExtResource("4_1bvp3")]
-visible = false
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -192.0
-offset_top = -499.0
-offset_right = 192.0
-offset_bottom = -343.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="hot_bar" parent="UI/InventoryInterface" instance=ExtResource("7_272bh")]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -192.0
-offset_top = -107.0
-offset_right = 192.0
-offset_bottom = -27.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="GrabbedSlot" parent="UI/InventoryInterface" instance=ExtResource("5_7mycd")]
-modulate = Color(1, 1, 1, 0.611765)
-self_modulate = Color(1, 1, 1, 0)
-layout_mode = 0
-offset_left = 3.0
-offset_top = 52.0
-offset_right = 75.0
-offset_bottom = 124.0
 
 [node name="Menus" type="Control" parent="UI"]
 layout_mode = 3
@@ -361,8 +293,6 @@ text = "Waiting for host"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[connection signal="gui_input" from="UI/InventoryInterface" to="UI/InventoryInterface" method="_on_gui_input"]
-[connection signal="visibility_changed" from="UI/InventoryInterface" to="UI/InventoryInterface" method="_on_visibility_changed"]
 [connection signal="button_down" from="UI/Menus/Main/Start/LAN" to="UI/Menus" method="_on_lan_button_down"]
 [connection signal="button_down" from="UI/Menus/Main/Start/STEAM" to="UI/Menus" method="_on_steam_button_down"]
 [connection signal="button_down" from="UI/Menus/Main/Start/EXIT" to="UI/Menus" method="_on_exit_button_down"]

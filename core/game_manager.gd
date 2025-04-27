@@ -7,6 +7,7 @@ var main: Main
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass
+	
 
 func start_game() -> void:
 	GameState.game_started = true
@@ -23,7 +24,12 @@ func _remove_player(id: int):
 		
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	if Input.is_key_pressed(KEY_ESCAPE) && GameState.game_started:
+		leave_game.rpc_id(1, multiplayer.get_unique_id())
 	pass
 	
+@rpc("any_peer")
+func leave_game(id: int) -> void:
+	multiplayer.multiplayer_peer.disconnect_peer(id)
 
 	

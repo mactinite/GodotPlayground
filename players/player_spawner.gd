@@ -18,7 +18,6 @@ func players_custom_spawn(id: int) -> Node:
 		GameState.local_player_object = currentPlayer
 	return currentPlayer
 
-
 func spawn_players():
 	var index = 0
 	for i in GameState.players:

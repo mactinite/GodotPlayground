@@ -7,3 +7,9 @@ class_name Main
 
 func _ready() -> void:
 	GameManager.main = self
+	NetworkManager.on_server_disconnected.connect(func ():
+		GameState.game_started = false
+		multiplayer.multiplayer_peer = null
+		GameManager.main.menus.goto(Menus.MENU.MAIN)
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	)

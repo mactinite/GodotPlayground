@@ -24,7 +24,6 @@ Steamworks="*res://steam/steamworks.gd"
 Lobby="*res://multiplayer/lobby.gd"
 GameManager="*res://core/game_manager.gd"
 Constants="*res://core/constants.gd"
-InventoryManager="*res://inventory/inventory_manager.gd"
 NetworkManager="*res://multiplayer/network_manager.gd"
 SceneManager="*res://core/scene_manager.gd"
 

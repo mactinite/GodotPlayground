@@ -2,6 +2,7 @@ extends Node
 
 signal on_player_connected()
 signal on_player_disconnected()
+signal on_server_disconnected()
 # Manage the state of the multiplayer client
 var peer: MultiplayerPeer
 
@@ -15,11 +16,12 @@ func _ready() -> void:
 # Called on clients when they lose connection to the server
 func server_disconnected() -> void:
 	# cleanup
+	on_server_disconnected.emit()
 	pass
 	
 #called on server and clients
 func _peer_connected(id):
-	print("Player Connected " + str(id))
+	print("Player Connected " + str(id) + ":" + "HOST" if multiplayer.is_server() else "CLIENT")
 	pass
 
 #called on server and clients
@@ -43,7 +45,12 @@ func start_host_enet(port: int) -> void:
 	peer = ENetMultiplayerPeer.new()
 	var status = peer.create_server(port)
 	multiplayer.multiplayer_peer = peer
-	send_player_info(Steamworks.steam_username, multiplayer.get_unique_id())
+	GameState.players[1] = {
+		"name": Steamworks.steam_username,
+		"id": 1,
+		"steam_id": Steamworks.steam_id,
+		"player_node": null
+	}
 	print("Waiting for players")
 
 func start_client_enet(address: String, port: int):
@@ -65,26 +72,33 @@ func start_host_steam():
 	peer = SteamMultiplayerPeer.new()
 	peer.create_host(0)
 	multiplayer.multiplayer_peer = peer
-	send_player_info(Steamworks.steam_username, multiplayer.get_unique_id())
+	GameState.players[1] = {
+		"name": Steamworks.steam_username,
+		"id": 1,
+		"steam_id": Steamworks.steam_id,
+		"player_node": null
+	}
 	Lobby.create_lobby()
 	print("Waiting for players")
 #endregion
 
 @rpc("any_peer")
-func send_player_info(username: String, id: int) -> void:
+func send_player_info(username: String, steam_id: int) -> void:
+	var id:int = multiplayer.get_remote_sender_id()
+
 	if !GameState.players.has(id):
 		GameState.players[id] = {
 			"name": username,
 			"id": id,
+			"steam_id": steam_id,
 			"player_node": null
 		}
 		on_player_connected.emit()
 		
 	if multiplayer.is_server():
 		for player_id in GameState.players:
-			send_player_info.rpc_id(id, \
-			GameState.players[player_id].name,\
-		 	GameState.players[player_id].id)
+			#broadcast players to everyone
+			send_player_info.rpc(GameState.players[player_id].name,	GameState.players[player_id].id)
 		if GameState.game_started:
 			send_game_start.rpc_id(id)
 			GameManager.main.player_spawner.spawn_players()
