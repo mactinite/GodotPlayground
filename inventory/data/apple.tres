@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="InventoryItem" load_steps=3 format=3 uid="uid://jsf2du6v5u8y"]
+
+[ext_resource type="Texture2D" uid="uid://dmca1k873io3a" path="res://assets/kenney_food-kit/Previews/apple.png" id="1_40x5u"]
+[ext_resource type="Script" uid="uid://dhhqv4vtihg3n" path="res://inventory/inventory_item.gd" id="2_pni56"]
+
+[resource]
+script = ExtResource("2_pni56")
+name = "Apple"
+desc = ""
+icon = ExtResource("1_40x5u")
+stackable = true
+metadata/_custom_type_script = "uid://dhhqv4vtihg3n"

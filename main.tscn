@@ -1,19 +1,24 @@
-[gd_scene load_steps=9 format=3 uid="uid://gas7lotpits8"]
+[gd_scene load_steps=13 format=3 uid="uid://gas7lotpits8"]
 
 [ext_resource type="Script" uid="uid://dayjsygbe8t0k" path="res://core/main.gd" id="1_5vw27"]
 [ext_resource type="Script" uid="uid://603hhk4pggmc" path="res://players/player_spawner.gd" id="2_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://c8b00seg1kw7x" path="res://players/player_controller.tscn" id="3_h2yge"]
 [ext_resource type="Script" uid="uid://t6h2a4visf66" path="res://map_spawner.gd" id="4_dg77c"]
 [ext_resource type="Script" uid="uid://c0qfcyeqfduxh" path="res://menus.gd" id="8_5vw27"]
+[ext_resource type="Script" uid="uid://5u2toannoudo" path="res://inventory/interface/inventory_ui.gd" id="9_4c57u"]
 [ext_resource type="Script" uid="uid://g5g75s74f5na" path="res://lan_interface.gd" id="9_kek77"]
 [ext_resource type="Script" uid="uid://2uxci3x7yf4n" path="res://steam_connect_interface.gd" id="10_4c57u"]
+[ext_resource type="PackedScene" uid="uid://b6mlylfgqvxt2" path="res://inventory/interface/inventory_component.tscn" id="10_dg77c"]
+[ext_resource type="PackedScene" uid="uid://c2jva0oucj50h" path="res://inventory/interface/slot_ui.tscn" id="10_efxa6"]
+[ext_resource type="Resource" uid="uid://qwdj5ixt6xok" path="res://inventory/data/Test_Inventory.tres" id="10_ycdy4"]
 [ext_resource type="Script" uid="uid://d0u1hxr2kcaqq" path="res://lobby_interface.gd" id="11_efxa6"]
 
-[node name="Main" type="Node3D" node_paths=PackedStringArray("menus", "player_spawner", "map_spawner")]
+[node name="Main" type="Node3D" node_paths=PackedStringArray("menus", "player_spawner", "map_spawner", "inventory_ui")]
 script = ExtResource("1_5vw27")
 menus = NodePath("UI/Menus")
 player_spawner = NodePath("Player Spawner")
 map_spawner = NodePath("Map Spawner")
+inventory_ui = NodePath("UI/Inventory UI")
 
 [node name="Map" type="Node3D" parent="." groups=["world"]]
 
@@ -293,6 +298,94 @@ text = "Waiting for host"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="Inventory UI" type="Control" parent="UI"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_4c57u")
+inventory_data = ExtResource("10_ycdy4")
+
+[node name="Inventory" parent="UI/Inventory UI" instance=ExtResource("10_dg77c")]
+layout_mode = 1
+offset_left = -136.0
+offset_top = -235.0
+offset_right = 136.0
+offset_bottom = -119.0
+
+[node name="External Inventory" parent="UI/Inventory UI" instance=ExtResource("10_dg77c")]
+visible = false
+layout_mode = 1
+offset_left = -136.0
+offset_top = -369.0
+offset_right = 136.0
+offset_bottom = -253.0
+
+[node name="Hotbar" type="Panel" parent="UI/Inventory UI"]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -136.0
+offset_top = -108.0
+offset_right = 136.0
+offset_bottom = -44.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/Inventory UI/Hotbar"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -136.0
+offset_top = -32.0
+offset_right = 136.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="GridContainer" type="GridContainer" parent="UI/Inventory UI/Hotbar/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+columns = 5
+
+[node name="Slot" parent="UI/Inventory UI/Hotbar/MarginContainer/GridContainer" instance=ExtResource("10_efxa6")]
+layout_mode = 2
+
+[node name="Slot2" parent="UI/Inventory UI/Hotbar/MarginContainer/GridContainer" instance=ExtResource("10_efxa6")]
+layout_mode = 2
+
+[node name="Slot3" parent="UI/Inventory UI/Hotbar/MarginContainer/GridContainer" instance=ExtResource("10_efxa6")]
+layout_mode = 2
+
+[node name="Slot4" parent="UI/Inventory UI/Hotbar/MarginContainer/GridContainer" instance=ExtResource("10_efxa6")]
+layout_mode = 2
+
+[node name="Slot5" parent="UI/Inventory UI/Hotbar/MarginContainer/GridContainer" instance=ExtResource("10_efxa6")]
+layout_mode = 2
+
+[node name="GrabbedSlot" parent="UI/Inventory UI" instance=ExtResource("10_efxa6")]
+visible = false
+layout_mode = 0
+offset_left = 658.0
+offset_top = 327.0
+offset_right = 706.0
+offset_bottom = 375.0
+disabled = true
+
 [connection signal="button_down" from="UI/Menus/Main/Start/LAN" to="UI/Menus" method="_on_lan_button_down"]
 [connection signal="button_down" from="UI/Menus/Main/Start/STEAM" to="UI/Menus" method="_on_steam_button_down"]
 [connection signal="button_down" from="UI/Menus/Main/Start/EXIT" to="UI/Menus" method="_on_exit_button_down"]
@@ -301,3 +394,4 @@ vertical_alignment = 1
 [connection signal="pressed" from="UI/Menus/STEAM/Start/back" to="UI/Menus/STEAM" method="_on_back_pressed"]
 [connection signal="visibility_changed" from="UI/Menus/LOBBY" to="UI/Menus/LOBBY" method="_on_visibility_changed"]
 [connection signal="pressed" from="UI/Menus/LOBBY/Start" to="UI/Menus/LOBBY" method="_on_start_pressed"]
+[connection signal="gui_input" from="UI/Inventory UI" to="UI/Inventory UI" method="_on_gui_input"]

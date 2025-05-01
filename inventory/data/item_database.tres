@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemDB" load_steps=6 format=3 uid="uid://bngn4u33xr13p"]
+
+[ext_resource type="Script" uid="uid://dhhqv4vtihg3n" path="res://inventory/inventory_item.gd" id="1_2sr72"]
+[ext_resource type="Resource" uid="uid://jsf2du6v5u8y" path="res://inventory/data/apple.tres" id="2_4p8bw"]
+[ext_resource type="Script" uid="uid://bube3fmyydc1m" path="res://inventory/item_db.gd" id="2_kcufi"]
+[ext_resource type="Resource" uid="uid://dsvg7hocp4dui" path="res://inventory/data/cup.tres" id="3_7rtwb"]
+[ext_resource type="Resource" uid="uid://dwnjh3n1kdm0e" path="res://inventory/data/hotdog.tres" id="4_mkby8"]
+
+[resource]
+script = ExtResource("2_kcufi")
+items = Array[ExtResource("1_2sr72")]([ExtResource("2_4p8bw"), ExtResource("3_7rtwb"), ExtResource("4_mkby8")])
+metadata/_custom_type_script = "uid://bube3fmyydc1m"

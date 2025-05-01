@@ -4,6 +4,7 @@ class_name Main
 @export var menus: Menus
 @export var player_spawner: PlayerSpawner
 @export var map_spawner: MapSpawner
+@export var inventory_ui: InventoryUI
 
 func _ready() -> void:
 	GameManager.main = self

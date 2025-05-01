@@ -1,9 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://xv1k3wuhqavi"]
+[gd_scene load_steps=15 format=3 uid="uid://xv1k3wuhqavi"]
 
 [ext_resource type="Texture2D" uid="uid://b8118oep1e568" path="res://kenney_prototype-textures/PNG/Dark/texture_07.png" id="1_2dftf"]
 [ext_resource type="Texture2D" uid="uid://j6ehl8lui555" path="res://assets/kloofendal_48d_partly_cloudy_puresky_4k.hdr" id="1_c6gwx"]
 [ext_resource type="Texture2D" uid="uid://drho6vpg1tfpa" path="res://kenney_prototype-textures/PNG/Orange/texture_02.png" id="2_js7pq"]
 [ext_resource type="Script" uid="uid://cci0lp62aunmc" path="res://multiplayer/network_rb.gd" id="4_p1v5b"]
+[ext_resource type="PackedScene" uid="uid://cmkodeg0ejtll" path="res://assets/Chest.glb" id="5_eu7l1"]
+[ext_resource type="Script" uid="uid://co8u2eh0b6t0p" path="res://inventory/container.gd" id="5_p1v5b"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bcbcq"]
 albedo_texture = ExtResource("1_2dftf")
@@ -29,6 +31,8 @@ background_mode = 2
 sky = SubResource("Sky_bcbcq")
 tonemap_mode = 2
 glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_p1v5b"]
 
 [node name="World" type="Node3D"]
 
@@ -85,3 +89,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(0.648091, 0.473021, -0.596849, 0, 0.783717, 0.621119, 0.761562, -0.402542, 0.50792, -6.95044, 6.14532, 5.62778)
+
+[node name="Container" type="StaticBody3D" parent="." groups=["loot"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3.11572, 0)
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("5_p1v5b")
+metadata/Verb = "Loot"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Container"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_p1v5b")
+
+[node name="Chest" parent="Container/CollisionShape3D" instance=ExtResource("5_eu7l1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)

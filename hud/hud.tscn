@@ -42,29 +42,6 @@ grow_vertical = 2
 ratio = 1.6
 stretch_mode = 1
 
-[node name="VFlowContainer" type="VFlowContainer" parent="SafezoneContainer"]
-layout_mode = 2
-size_flags_horizontal = 8
-
-[node name="RichTextLabel" type="RichTextLabel" parent="SafezoneContainer/VFlowContainer"]
-clip_contents = false
-custom_minimum_size = Vector2(250, 32)
-layout_mode = 2
-size_flags_vertical = 0
-text = " Mactinite joined"
-fit_content = true
-
-[node name="InputHints" type="RichTextLabel" parent="SafezoneContainer"]
-custom_minimum_size = Vector2(150, 150)
-layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 8
-text = "WASD - Move
-Space - Jump
-Ctrl - Crouch"
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="Control" type="Control" parent="SafezoneContainer"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2

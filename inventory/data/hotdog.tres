@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="InventoryItem" load_steps=3 format=3 uid="uid://dwnjh3n1kdm0e"]
+
+[ext_resource type="Texture2D" uid="uid://cgljxf8ofvb2" path="res://assets/kenney_food-kit/Previews/hot-dog.png" id="1_p1rsf"]
+[ext_resource type="Script" uid="uid://dhhqv4vtihg3n" path="res://inventory/inventory_item.gd" id="2_fv73h"]
+
+[resource]
+script = ExtResource("2_fv73h")
+name = "Hot dog"
+desc = ""
+icon = ExtResource("1_p1rsf")
+metadata/_custom_type_script = "uid://dhhqv4vtihg3n"

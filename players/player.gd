@@ -50,13 +50,25 @@ func _input(event: InputEvent):
 			rotate_y(deg_to_rad(-event.relative.x * mouse_sens))
 			head.rotate_x(deg_to_rad(-event.relative.y * mouse_sens))
 			head.rotation.x = clamp(head.rotation.x, deg_to_rad(-89), deg_to_rad(89))
+			
+
+func _process(delta: float) -> void:
+	if is_multiplayer_authority():
+		if Input.is_action_just_pressed("inventory"):
+			Inventory.toggle_inventory()
+			if Inventory.inventory_open:
+				can_control = false
+				Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+			else:
+				can_control = true
+				Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 func _physics_process(delta: float) -> void:
-	if is_multiplayer_authority() && can_control:
+	if is_multiplayer_authority():
 		movement(delta)
 	
 func movement(delta: float) -> void:
-	if Input.is_action_pressed("crouch"):
+	if Input.is_action_pressed("crouch") and can_control:
 		current_speed = crouching_speed
 		head.position.y = lerp(head.position.y, starting_height + crouch_depth, delta * lerp_speed)
 		crouch_collision_shape.disabled = false
@@ -74,14 +86,14 @@ func movement(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
-
+	
 	# Handle jump.
-	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
+	if Input.is_action_just_pressed("ui_accept") and is_on_floor() and can_control:
 		velocity.y = jump_velocity
 
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
-	var input_dir := Input.get_vector("left", "right", "forward", "backward")
+	var input_dir := Input.get_vector("left", "right", "forward", "backward") if can_control else Vector2.ZERO
 	direction = lerp(direction, (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized(), delta * lerp_speed)
 	
 	if direction:

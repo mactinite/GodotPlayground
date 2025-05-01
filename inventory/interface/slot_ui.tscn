@@ -1,0 +1,57 @@
+[gd_scene load_steps=3 format=3 uid="uid://c2jva0oucj50h"]
+
+[ext_resource type="Script" uid="uid://ci7e2rq5c0dpy" path="res://inventory/interface/slot_ui.gd" id="1_sthnt"]
+[ext_resource type="Texture2D" uid="uid://qinao0lbbrfk" path="res://icon.svg" id="1_u4i3g"]
+
+[node name="Slot" type="Panel" node_paths=PackedStringArray("icon", "label")]
+modulate = Color(0.72, 0.72, 0.72, 1)
+clip_contents = true
+custom_minimum_size = Vector2(48, 48)
+script = ExtResource("1_sthnt")
+icon = NodePath("MarginContainer/Icon")
+label = NodePath("Label")
+disabled_color = Color(0.67, 0.67, 0.67, 0.760784)
+hovered_color = Color(1, 1, 1, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 2
+theme_override_constants/margin_bottom = 2
+
+[node name="Icon" type="TextureRect" parent="MarginContainer"]
+layout_mode = 2
+texture = ExtResource("1_u4i3g")
+expand_mode = 4
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -23.0
+offset_top = 3.0
+offset_right = -6.0
+offset_bottom = 20.0
+grow_horizontal = 0
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0.0923971, 0.0923971, 0.0923971, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_constants/shadow_outline_size = 1
+theme_override_font_sizes/font_size = 12
+text = "99"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

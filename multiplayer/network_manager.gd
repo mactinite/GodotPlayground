@@ -9,13 +9,14 @@ var peer: MultiplayerPeer
 func _ready() -> void:
 	multiplayer.peer_connected.connect(_peer_connected)
 	multiplayer.peer_disconnected.connect(_peer_disconnected)
-	multiplayer.connected_to_server.connect(connected_to_server)
 	multiplayer.connection_failed.connect(connection_failed)
 	multiplayer.server_disconnected.connect(server_disconnected)
 
 # Called on clients when they lose connection to the server
 func server_disconnected() -> void:
 	# cleanup
+	Inventory.player_inventory = InventoryData.new()
+	Inventory.on_player_inventory_update.emit(Inventory.player_inventory)
 	on_server_disconnected.emit()
 	pass
 	
@@ -29,13 +30,7 @@ func _peer_disconnected(id):
 	print("Player Disconnected " + str(id))
 	GameManager._remove_player(id)
 	pass
-	
-#called only on clients
-func connected_to_server():
-	print("Connected to server")
-	send_player_info.rpc_id(1, Steamworks.steam_username, multiplayer.get_unique_id())
-	pass
-	
+		
 func connection_failed():
 	print("Connection failed!")
 	pass
@@ -46,11 +41,13 @@ func start_host_enet(port: int) -> void:
 	var status = peer.create_server(port)
 	multiplayer.multiplayer_peer = peer
 	GameState.players[1] = {
-		"name": Steamworks.steam_username,
+		"name": GameManager.lan_user_name,
 		"id": 1,
-		"steam_id": Steamworks.steam_id,
+		"user_id": GameManager.lan_user_name.hash(),
 		"player_node": null
 	}
+	
+	Inventory.set_player_inventory(1, GameManager.lan_user_name.hash())
 	print("Waiting for players")
 
 func start_client_enet(address: String, port: int):
@@ -58,6 +55,13 @@ func start_client_enet(address: String, port: int):
 	var status = peer.create_client(address,port)
 	multiplayer.multiplayer_peer = peer
 	print("Waiting for host")
+	
+	multiplayer.connected_to_server.connect(func():
+		print("Connected to server: ENET")
+		send_player_info.rpc_id(1, GameManager.lan_user_name, GameManager.lan_user_name.hash())
+	)
+	
+	
 #endregion
 
 #region SteamMultiplayerPeer
@@ -66,6 +70,12 @@ func start_client_steam(steam_id: int):
 	peer.create_client(steam_id, 0)
 	multiplayer.multiplayer_peer = peer
 	print("Waiting for host")
+	
+	multiplayer.connected_to_server.connect(func():
+		print("Connected to server: STEAM")
+	
+		send_player_info.rpc_id(1, Steamworks.steam_username, Steamworks.steam_id)
+	)
 	pass
 	
 func start_host_steam():
@@ -75,27 +85,31 @@ func start_host_steam():
 	GameState.players[1] = {
 		"name": Steamworks.steam_username,
 		"id": 1,
-		"steam_id": Steamworks.steam_id,
+		"user_id": Steamworks.steam_id,
 		"player_node": null
 	}
+	Inventory.set_player_inventory(1, Steamworks.steam_id)
 	Lobby.create_lobby()
 	print("Waiting for players")
 #endregion
 
 @rpc("any_peer")
-func send_player_info(username: String, steam_id: int) -> void:
+func send_player_info(username: String, user_id: int) -> void:
 	var id:int = multiplayer.get_remote_sender_id()
 
 	if !GameState.players.has(id):
 		GameState.players[id] = {
 			"name": username,
 			"id": id,
-			"steam_id": steam_id,
+			"user_id": user_id,
 			"player_node": null
 		}
 		on_player_connected.emit()
 		
 	if multiplayer.is_server():
+		#create server side inventory
+		Inventory.set_player_inventory(id, user_id)
+		
 		for player_id in GameState.players:
 			#broadcast players to everyone
 			send_player_info.rpc(GameState.players[player_id].name,	GameState.players[player_id].id)
