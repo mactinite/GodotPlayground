@@ -1,6 +1,7 @@
 extends Node
+class_name InventoryContainer
 
-var inventory_data: InventoryData
+@export var inventory_data: InventoryData
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -10,3 +11,7 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
+
+
+func interact() -> void:
+	Inventory.open_container(self)

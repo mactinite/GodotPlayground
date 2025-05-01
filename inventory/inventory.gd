@@ -1,7 +1,9 @@
 extends Node
 
 signal on_player_inventory_update(InventoryData)
-signal toggle_player_inventory()
+signal toggle_player_inventory(bool)
+signal show_container_inventory(InventoryContainer)
+
 const TEST_INVENTORY = preload("res://inventory/data/Test_Inventory.tres")
 const TEST_ITEM_DATABASE = preload("res://inventory/data/item_database.tres")
 var item_db: ItemDB = TEST_ITEM_DATABASE
@@ -33,6 +35,11 @@ func update_player_inventory(encoded: Array):
 func toggle_inventory():
 	inventory_open = !inventory_open
 	toggle_player_inventory.emit(inventory_open)
+
+func open_container(container: InventoryContainer):
+	inventory_open = true
+	toggle_player_inventory.emit(inventory_open)
+	show_container_inventory.emit(container)
 	
 func set_player_inventory(multiplayer_id:int, user_id: int):
 	if !Inventory.server_all_player_inventories.keys().has(user_id):

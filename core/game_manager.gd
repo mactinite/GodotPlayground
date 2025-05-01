@@ -45,7 +45,7 @@ func _process(delta: float) -> void:
 		leave_game.rpc_id(1, multiplayer.get_unique_id())
 	pass
 	
-@rpc("any_peer")
+@rpc("any_peer", "call_local")
 func leave_game(id: int) -> void:
 	multiplayer.multiplayer_peer.disconnect_peer(id)
 

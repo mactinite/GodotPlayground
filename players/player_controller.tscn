@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://i48ae2p7id5y" path="res://players/player.gd" id="1_6nbh1"]
 [ext_resource type="Script" uid="uid://cfhlcaae8v74w" path="res://players/player_grab.gd" id="2_halkx"]
-[ext_resource type="PackedScene" uid="uid://cb03d1o62chyj" path="res://hud/hud.tscn" id="3_va7e3"]
+[ext_resource type="Script" uid="uid://vgvgmopiy2g0" path="res://players/player_interact.gd" id="3_cqf6s"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_876be"]
 
@@ -42,8 +42,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
 [node name="Hold" type="Node3D" parent="head"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
 
-[node name="HUD" parent="head" instance=ExtResource("3_va7e3")]
-
 [node name="Camera3D" type="Camera3D" parent="head"]
 
 [node name="grab_shapecast" type="ShapeCast3D" parent="head"]
@@ -54,6 +52,7 @@ collision_mask = 6
 [node name="interaction_raycast" type="RayCast3D" parent="head"]
 target_position = Vector3(0, 0, -2)
 collision_mask = 6
+script = ExtResource("3_cqf6s")
 
 [node name="uncrouch_raycast" type="RayCast3D" parent="."]
 target_position = Vector3(0, 2, 0)

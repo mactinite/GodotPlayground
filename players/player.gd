@@ -39,8 +39,15 @@ func _ready():
 		GameState.local_player_object = self
 		var spawn = get_tree().get_nodes_in_group("spawn_point").pick_random()
 		global_position = spawn.global_position
+		Inventory.toggle_player_inventory.connect(func(open):
+			if open:
+				can_control = false
+				Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+			else:
+				can_control = true
+				Input.mouse_mode = Input.MOUSE_MODE_CAPTURED	
+		)
 	else:
-		hud.hide()
 		camera_3d.set_current(false)
 
 	
@@ -56,12 +63,7 @@ func _process(delta: float) -> void:
 	if is_multiplayer_authority():
 		if Input.is_action_just_pressed("inventory"):
 			Inventory.toggle_inventory()
-			if Inventory.inventory_open:
-				can_control = false
-				Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-			else:
-				can_control = true
-				Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
 
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority():

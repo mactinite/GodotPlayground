@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://gas7lotpits8"]
+[gd_scene load_steps=14 format=3 uid="uid://gas7lotpits8"]
 
 [ext_resource type="Script" uid="uid://dayjsygbe8t0k" path="res://core/main.gd" id="1_5vw27"]
 [ext_resource type="Script" uid="uid://603hhk4pggmc" path="res://players/player_spawner.gd" id="2_0xm2m"]
@@ -12,6 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://c2jva0oucj50h" path="res://inventory/interface/slot_ui.tscn" id="10_efxa6"]
 [ext_resource type="Resource" uid="uid://qwdj5ixt6xok" path="res://inventory/data/Test_Inventory.tres" id="10_ycdy4"]
 [ext_resource type="Script" uid="uid://d0u1hxr2kcaqq" path="res://lobby_interface.gd" id="11_efxa6"]
+[ext_resource type="Texture2D" uid="uid://ckuoqbobjpq5t" path="res://kenney_cursor-pixel-pack/Tiles/tile_0057.png" id="13_ycdy4"]
 
 [node name="Main" type="Node3D" node_paths=PackedStringArray("menus", "player_spawner", "map_spawner", "inventory_ui")]
 script = ExtResource("1_5vw27")
@@ -385,6 +386,32 @@ offset_top = 327.0
 offset_right = 706.0
 offset_bottom = 375.0
 disabled = true
+
+[node name="HUD" type="Control" parent="UI"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="UI/HUD"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("13_ycdy4")
+stretch_mode = 3
 
 [connection signal="button_down" from="UI/Menus/Main/Start/LAN" to="UI/Menus" method="_on_lan_button_down"]
 [connection signal="button_down" from="UI/Menus/Main/Start/STEAM" to="UI/Menus" method="_on_steam_button_down"]
