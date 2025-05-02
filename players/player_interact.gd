@@ -12,3 +12,10 @@ func _physics_process(delta: float) -> void:
 		interaction_changed.emit(verb)
 	else:
 		interaction_changed.emit("Default")
+
+func _input(event: InputEvent) -> void:
+	if is_multiplayer_authority() and event.is_action_pressed("interact"):
+		if check_interactable():
+			var interactable = get_collider()
+			if interactable.has_method("interact"):
+				interactable.call("interact")

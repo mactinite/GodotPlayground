@@ -22,8 +22,9 @@ properties/1/replication_mode = 1
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_1hgir"]
 
-[node name="PlayerController" type="CharacterBody3D"]
+[node name="PlayerController" type="CharacterBody3D" node_paths=PackedStringArray("interaction_raycast")]
 script = ExtResource("1_6nbh1")
+interaction_raycast = NodePath("head/interaction_raycast")
 
 [node name="player_grab" type="Node" parent="."]
 script = ExtResource("2_halkx")

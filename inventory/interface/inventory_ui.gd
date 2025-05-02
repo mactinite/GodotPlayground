@@ -9,18 +9,25 @@ class_name InventoryUI
 @onready var grabbed_slot: SlotUI = $GrabbedSlot
 
 var hovered_index: int = -1
-var hovered_inventory: InventoryComponent;
+var hovered_inventory: InventoryComponent
+
+var open_container: InventoryContainer
 
 func _ready() -> void:
-	
 	Inventory.toggle_player_inventory.connect(func(open):
 		self.visible = open
 		if !open:
 			container_inventory.visible = false
+			container_inventory.inventory_data = InventoryData.new()
+			if open_container:
+				open_container.on_inventory_updated.disconnect(_container_updated)
+				open_container = null
 	)
 	
 	Inventory.show_container_inventory.connect(func(container: InventoryContainer):
 		self.visible = true
+		open_container = container
+		open_container.on_inventory_updated.connect(_container_updated)
 		container_data = container.inventory_data
 		container_inventory.inventory_data = container_data
 		container_inventory.visible = true
@@ -35,20 +42,20 @@ func _ready() -> void:
 	
 	container_inventory.inventory_data = container_data
 	
-	inventory.on_slot_click_down.connect(func (index: int):
-		var name = inventory_data.slots[index].item.name if inventory_data.slots[index] && inventory_data.slots[index].item else "null"
+	inventory.on_slot_click_down.connect(func(index: int):
 		if inventory_data.slots[index]:
 			grabbed_slot.slot_data = inventory_data.slots[index]
 			grabbed_slot.visible = true
 		pass
 	)
-	inventory.on_slot_click_up.connect(func (index: int):
-		var name = inventory_data.slots[index].item.name if inventory_data.slots[index] && inventory_data.slots[index].item else "null"
-		
-		print("Dropping %s from %s:%s on %s;%s" % [name, inventory_data, index, hovered_inventory, hovered_index])
-		
+	inventory.on_slot_click_up.connect(func(index: int):
 		_swap_slots(inventory_data, index, hovered_inventory.inventory_data, hovered_index)
-		
+
+		if hovered_inventory == container_inventory:
+			# send the new data to the server
+			Inventory.send_container_data.rpc_id(1, open_container.container_id, container_data.net_encode())
+			
+		Inventory.update_player_inventory.rpc_id(1, inventory_data.net_encode())
 		grabbed_slot.slot_data = null
 		grabbed_slot.visible = false
 	)
@@ -58,19 +65,17 @@ func _ready() -> void:
 		hovered_inventory = inventory
 	)
 	
-	container_inventory.on_slot_click_down.connect(func (index: int):
-			var name = container_data.slots[index].item.name if container_data.slots[index] && container_data.slots[index].item else "null"
-			if container_data.slots[index]:
-				grabbed_slot.slot_data = container_data.slots[index]
-				grabbed_slot.visible = true
+	container_inventory.on_slot_click_down.connect(func(index: int):
+		if container_data.slots[index]:
+			grabbed_slot.slot_data = container_data.slots[index]
+			grabbed_slot.visible = true
 	)
-	container_inventory.on_slot_click_up.connect(func (index: int):
-		var name = container_data.slots[index].item.name if container_data.slots[index] && container_data.slots[index].item else "null"
-		
-		print("Dropping %s from %s:%s on %s;%s" % [name, container_data, index, hovered_inventory, hovered_index])
-		
+	container_inventory.on_slot_click_up.connect(func(index: int):
 		_swap_slots(container_data, index, hovered_inventory.inventory_data, hovered_index)
-		
+
+		# send the new data to the server
+		Inventory.send_container_data.rpc_id(1, open_container.container_id, container_data.net_encode())
+		Inventory.update_player_inventory.rpc_id(1, inventory_data.net_encode())
 		grabbed_slot.slot_data = null
 		grabbed_slot.visible = false
 	)
@@ -80,18 +85,22 @@ func _ready() -> void:
 		hovered_inventory = container_inventory
 	)
 	
-func _swap_slots(inventory: InventoryData, index: int, \
-	other_inventory: InventoryData, other_index: int) -> void:
+func _container_updated() -> void:
+	container_data = open_container.inventory_data
+	container_inventory.inventory_data = container_data
+	container_inventory.redraw_inventory()
+
+func _swap_slots(_inventory_data: InventoryData, index: int, \
+	other_inventory_data: InventoryData, other_index: int) -> void:
 	# drop the item into the inventory data, and if anything is return swap it to the source index
-	var dest = other_inventory.slots[other_index]		
-	other_inventory.slots[other_index] = grabbed_slot.slot_data
-	inventory.slots[index] = dest
+	var dest = other_inventory_data.slots[other_index]
+	other_inventory_data.slots[other_index] = grabbed_slot.slot_data
+	_inventory_data.slots[index] = dest
+
 	hovered_inventory.redraw_inventory()
-	Inventory.update_player_inventory.rpc_id(1, inventory.net_encode())
+	inventory.redraw_inventory()
 
-func _physics_process(delta: float) -> void:
+
+func _physics_process(_delta: float) -> void:
 	if grabbed_slot.visible:
-		grabbed_slot.global_position = get_global_mouse_position() + Vector2(8,	8)
-
-func receive_command(index: int, action: InventoryCommand):
-	print(action.as_string())
+		grabbed_slot.global_position = get_global_mouse_position() + Vector2(5, 5)

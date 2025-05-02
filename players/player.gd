@@ -1,10 +1,11 @@
 extends CharacterBody3D
 
+@export var interaction_raycast: RayCast3D
+
 @onready var head: Node3D = $head
 @onready var crouch_collision_shape: CollisionShape3D = $crouch_collision_shape
 @onready var standing_collision_shape: CollisionShape3D = $standing_collision_shape
 @onready var uncrouch_raycast: RayCast3D = $uncrouch_raycast
-@onready var interaction_raycast: RayCast3D = $head/interaction_raycast
 @onready var hud: Control = $head/HUD
 @onready var camera_3d: Camera3D = $head/Camera3D
 @onready var player_grab: Node = $player_grab

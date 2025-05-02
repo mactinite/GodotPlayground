@@ -389,7 +389,6 @@ offset_bottom = 375.0
 disabled = true
 
 [node name="HUD" type="Control" parent="UI"]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -400,6 +399,7 @@ mouse_filter = 2
 script = ExtResource("13_w48qg")
 
 [node name="Reticle" type="TextureRect" parent="UI/HUD"]
+visible = false
 texture_filter = 1
 layout_mode = 1
 anchors_preset = 8

@@ -14,7 +14,6 @@ extends Control
 func _ready() -> void:
 	update_reticle("Default")
 	reticle.visible = false
-	SignalBus.on_game_start.connect(_on_game_start)
 	SignalBus.on_player_spawned.connect(_on_player_spawned)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -36,13 +35,6 @@ func update_reticle(cursor_type: String) -> void:
 	else:
 		reticle.texture = cursormap["Default"]
 
-# Signal handler for game start.
-func _on_game_start() -> void:
-	player_controller = GameState.local_player_object
-	if player_controller:
-		interaction_raycast = player_controller.interaction_raycast
-		interaction_raycast.interaction_changed.connect(_on_interaction_changed)
-		reticle.visible = true
 
 func _on_interaction_changed(verb: String) -> void:
 	update_reticle(verb)
@@ -52,6 +44,6 @@ func _on_player_spawned(player: Node) -> void:
 	if player_controller:
 		interaction_raycast = player_controller.interaction_raycast
 		if interaction_raycast:
-			interaction_raycast.interaction_changed.disconnect(_on_interaction_changed)
 			interaction_raycast.interaction_changed.connect(_on_interaction_changed)
-		reticle.visible = true
+			reticle.visible = true
+		
