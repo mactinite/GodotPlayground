@@ -4,7 +4,7 @@ extends CharacterBody3D
 @onready var crouch_collision_shape: CollisionShape3D = $crouch_collision_shape
 @onready var standing_collision_shape: CollisionShape3D = $standing_collision_shape
 @onready var uncrouch_raycast: RayCast3D = $uncrouch_raycast
-
+@onready var interaction_raycast: RayCast3D = $head/interaction_raycast
 @onready var hud: Control = $head/HUD
 @onready var camera_3d: Camera3D = $head/Camera3D
 @onready var player_grab: Node = $player_grab
@@ -37,6 +37,7 @@ func _ready():
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		camera_3d.set_current(true)
 		GameState.local_player_object = self
+		SignalBus.on_player_spawned.emit(self)
 		var spawn = get_tree().get_nodes_in_group("spawn_point").pick_random()
 		global_position = spawn.global_position
 		Inventory.toggle_player_inventory.connect(func(open):
@@ -45,7 +46,7 @@ func _ready():
 				Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 			else:
 				can_control = true
-				Input.mouse_mode = Input.MOUSE_MODE_CAPTURED	
+				Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		)
 	else:
 		camera_3d.set_current(false)
@@ -109,5 +110,5 @@ func movement(delta: float) -> void:
 
 
 func get_drop_position() -> Vector3:
-	var direction = -camera_3d.global_transform.basis.z
+	var direction = - camera_3d.global_transform.basis.z
 	return camera_3d.global_position + direction

@@ -4,7 +4,7 @@ var player_scene = "res://player_controller.tscn";
 
 var main: Main
 
-var lan_user_name : String = "Master Chief"
+var lan_user_name: String = "Master Chief"
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -48,5 +48,3 @@ func _process(delta: float) -> void:
 @rpc("any_peer", "call_local")
 func leave_game(id: int) -> void:
 	multiplayer.multiplayer_peer.disconnect_peer(id)
-
-	

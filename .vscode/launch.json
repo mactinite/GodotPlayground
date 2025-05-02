@@ -12,7 +12,7 @@
 			"debug_collisions": false,
 			"debug_paths": false,
 			"debug_navigation": false,
-			"additional_options": ""
+			"additional_options": "--user=player1"
 		},
 		{
 			"name": "GDScript: Launch Project",
@@ -22,7 +22,7 @@
 			"debug_collisions": false,
 			"debug_paths": false,
 			"debug_navigation": false,
-			"additional_options": ""
+			"additional_options": "--user=player1"
 		}
 	]
 }
