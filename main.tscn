@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://gas7lotpits8"]
+[gd_scene load_steps=16 format=3 uid="uid://gas7lotpits8"]
 
 [ext_resource type="Script" uid="uid://dayjsygbe8t0k" path="res://core/main.gd" id="1_5vw27"]
 [ext_resource type="Script" uid="uid://603hhk4pggmc" path="res://players/player_spawner.gd" id="2_0xm2m"]
@@ -14,13 +14,15 @@
 [ext_resource type="Script" uid="uid://d0u1hxr2kcaqq" path="res://lobby_interface.gd" id="11_efxa6"]
 [ext_resource type="Script" uid="uid://kq6kdi1u0vlc" path="res://hud/hud.gd" id="13_w48qg"]
 [ext_resource type="Texture2D" uid="uid://ckuoqbobjpq5t" path="res://kenney_cursor-pixel-pack/Tiles/tile_0057.png" id="13_ycdy4"]
+[ext_resource type="Script" uid="uid://c3dj4v244ocgn" path="res://notification_manager.gd" id="15_vivmo"]
 
-[node name="Main" type="Node3D" node_paths=PackedStringArray("menus", "player_spawner", "map_spawner", "inventory_ui")]
+[node name="Main" type="Node3D" node_paths=PackedStringArray("menus", "player_spawner", "map_spawner", "inventory_ui", "notification_manager")]
 script = ExtResource("1_5vw27")
 menus = NodePath("UI/Menus")
 player_spawner = NodePath("Player Spawner")
 map_spawner = NodePath("Map Spawner")
 inventory_ui = NodePath("UI/Inventory UI")
+notification_manager = NodePath("UI/Notifications")
 
 [node name="Map" type="Node3D" parent="." groups=["world"]]
 
@@ -38,6 +40,35 @@ script = ExtResource("2_0xm2m")
 player_scene = ExtResource("3_h2yge")
 
 [node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("13_w48qg")
+
+[node name="Reticle" type="TextureRect" parent="UI/HUD"]
+visible = false
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("13_ycdy4")
+stretch_mode = 3
 
 [node name="Menus" type="Control" parent="UI"]
 layout_mode = 3
@@ -388,7 +419,7 @@ offset_right = 706.0
 offset_bottom = 375.0
 disabled = true
 
-[node name="HUD" type="Control" parent="UI"]
+[node name="Notifications" type="Control" parent="UI"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -396,26 +427,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("13_w48qg")
+script = ExtResource("15_vivmo")
 
-[node name="Reticle" type="TextureRect" parent="UI/HUD"]
-visible = false
-texture_filter = 1
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Notifications"]
+custom_minimum_size = Vector2(200, 250)
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("13_ycdy4")
-stretch_mode = 3
 
 [connection signal="button_down" from="UI/Menus/Main/Start/LAN" to="UI/Menus" method="_on_lan_button_down"]
 [connection signal="button_down" from="UI/Menus/Main/Start/STEAM" to="UI/Menus" method="_on_steam_button_down"]

@@ -5,6 +5,7 @@ class_name Main
 @export var player_spawner: PlayerSpawner
 @export var map_spawner: MapSpawner
 @export var inventory_ui: InventoryUI
+@export var notification_manager: Node
 
 func _ready() -> void:
 	GameManager.main = self

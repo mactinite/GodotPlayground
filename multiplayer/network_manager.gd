@@ -27,9 +27,8 @@ func _peer_connected(id):
 
 #called on server and clients
 func _peer_disconnected(id):
-	print("Player Disconnected " + str(id))
-	GameManager._remove_player(id)
-	pass
+	if(multiplayer.is_server()):
+		on_player_left.rpc(id)
 		
 func connection_failed():
 	print("Connection failed!")
@@ -55,13 +54,16 @@ func start_client_enet(address: String, port: int):
 	var status = peer.create_client(address,port)
 	multiplayer.multiplayer_peer = peer
 	print("Waiting for host")
+	var connections = multiplayer.connected_to_server.get_connections()
+	print(connections)
+	multiplayer.connected_to_server.disconnect(_on_enet_server_connected)
+	multiplayer.connected_to_server.connect(_on_enet_server_connected)		
 	
-	multiplayer.connected_to_server.connect(func():
-		print("Connected to server: ENET")
-		send_player_info.rpc_id(1, GameManager.lan_user_name, GameManager.lan_user_name.hash())
-	)
-	
-	
+func _on_enet_server_connected() -> void:
+	print("Connected to server: ENET")
+	send_player_info.rpc_id(1, GameManager.lan_user_name, GameManager.lan_user_name.hash())
+
+
 #endregion
 
 #region SteamMultiplayerPeer
@@ -109,15 +111,32 @@ func send_player_info(username: String, user_id: int) -> void:
 	if multiplayer.is_server():
 		#create server side inventory
 		Inventory.set_player_inventory(id, user_id)
-		
+		send_session_notification.rpc("Player " + username + " has joined the game")
 		for player_id in GameState.players:
 			#broadcast players to everyone
 			send_player_info.rpc(GameState.players[player_id].name,	GameState.players[player_id].id)
 		if GameState.game_started:
 			send_game_start.rpc_id(id)
 			GameManager.main.player_spawner.spawn_players()
+
+@rpc("authority", "call_local")
+func on_player_left(id: int) -> void:
+	# Remove the player from the game
+	if multiplayer.is_server():
+		send_session_notification.rpc("Player " + GameState.players[id].name + " has left the game")
+		GameManager._remove_player(id)
+		GameState.players.erase(id)
+		on_player_disconnected.emit()
+	else:
+		GameState.players.erase(id)
 			
 @rpc("authority", "call_local")
 func send_game_start()->void:
 	GameManager.start_game()
 	GameManager.main.menus.close()
+
+
+@rpc("authority", "call_local")
+func send_session_notification(message: String) -> void:
+	# Send a notification to all players
+	GameManager.main.notification_manager.add_notification(message)
