@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://gas7lotpits8"]
+[gd_scene load_steps=19 format=3 uid="uid://gas7lotpits8"]
 
 [ext_resource type="Script" uid="uid://dayjsygbe8t0k" path="res://core/main.gd" id="1_5vw27"]
 [ext_resource type="Script" uid="uid://603hhk4pggmc" path="res://players/player_spawner.gd" id="2_0xm2m"]
@@ -13,8 +13,15 @@
 [ext_resource type="Resource" uid="uid://qwdj5ixt6xok" path="res://inventory/data/Test_Inventory.tres" id="10_ycdy4"]
 [ext_resource type="Script" uid="uid://d0u1hxr2kcaqq" path="res://lobby_interface.gd" id="11_efxa6"]
 [ext_resource type="Script" uid="uid://kq6kdi1u0vlc" path="res://hud/hud.gd" id="13_w48qg"]
+[ext_resource type="Script" uid="uid://rpp10krxovme" path="res://inventory/inventory_data.gd" id="13_yaehf"]
 [ext_resource type="Texture2D" uid="uid://ckuoqbobjpq5t" path="res://kenney_cursor-pixel-pack/Tiles/tile_0057.png" id="13_ycdy4"]
+[ext_resource type="Script" uid="uid://b17i1d5yt7kiu" path="res://inventory/inventory_slot.gd" id="14_074og"]
 [ext_resource type="Script" uid="uid://c3dj4v244ocgn" path="res://notification_manager.gd" id="15_vivmo"]
+
+[sub_resource type="Resource" id="Resource_cegan"]
+script = ExtResource("13_yaehf")
+slots = Array[ExtResource("14_074og")]([null, null, null, null, null])
+metadata/_custom_type_script = "uid://rpp10krxovme"
 
 [node name="Main" type="Node3D" node_paths=PackedStringArray("menus", "player_spawner", "map_spawner", "inventory_ui", "notification_manager")]
 script = ExtResource("1_5vw27")
@@ -341,6 +348,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("9_4c57u")
 inventory_data = ExtResource("10_ycdy4")
+container_data = SubResource("Resource_cegan")
 
 [node name="Inventory" parent="UI/Inventory UI" instance=ExtResource("10_dg77c")]
 layout_mode = 1

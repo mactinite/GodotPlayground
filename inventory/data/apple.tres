@@ -9,4 +9,5 @@ name = "Apple"
 desc = ""
 icon = ExtResource("1_40x5u")
 stackable = true
+max_stack = 10
 metadata/_custom_type_script = "uid://dhhqv4vtihg3n"

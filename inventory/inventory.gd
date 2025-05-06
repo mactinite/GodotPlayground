@@ -19,7 +19,12 @@ func _ready() -> void:
 
 @rpc("authority", "call_local")
 func player_inventory_updated(encoded: Array):
-	player_inventory = InventoryData.net_decode(encoded)
+
+	if player_inventory == null:
+		player_inventory = InventoryData.net_decode(encoded)
+	else:
+		player_inventory.update_from_network(encoded)
+	
 	on_player_inventory_update.emit(player_inventory)
 
 
@@ -28,7 +33,7 @@ func update_player_inventory(encoded: Array):
 	if multiplayer.is_server():
 		var sender = multiplayer.get_remote_sender_id()
 		var unique_id = GameState.players[sender].user_id
-		server_all_player_inventories[unique_id] = InventoryData.net_decode(encoded)
+		server_all_player_inventories[unique_id].update_from_network(encoded)
 		player_inventory_updated.rpc_id(sender, server_all_player_inventories[unique_id].net_encode())
 
 func toggle_inventory():
@@ -53,13 +58,13 @@ func sync_container_data(container_id: int):
 @rpc("any_peer", "call_local")
 func send_container_data(container_id: int, encoded_data: Array):
 	if container_registry.has(container_id):
-		container_registry[container_id].update_inventory(InventoryData.net_decode(encoded_data))
+		container_registry[container_id].inventory_data.update_from_network(encoded_data)
 		update_container_data.rpc(container_id, encoded_data)
 
 @rpc("authority")
 func update_container_data(container_id: int, encoded_data: Array):
 	if container_registry.has(container_id):
-		container_registry[container_id].update_inventory(InventoryData.net_decode(encoded_data))
+		container_registry[container_id].inventory_data.update_from_network(encoded_data)
 
 func get_container_data(container_id: int) -> InventoryData:
 	if container_registry.has(container_id):

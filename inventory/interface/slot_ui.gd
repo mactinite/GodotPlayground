@@ -8,16 +8,16 @@ signal on_left_click_released()
 signal on_right_click_released()
 
 @export var icon: TextureRect
-@export var label: Label 
+@export var label: Label
 @export var disabled_color: Color
 @export var hovered_color: Color
-@export var disabled = false :
+@export var disabled = false:
 	set(value):
 		disabled = value
 		_update_components()
 
-var slot_data: InventorySlot :
-	set(value): 
+var slot_data: InventorySlot:
+	set(value):
 		slot_data = value
 		_update_components()
 

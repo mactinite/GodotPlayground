@@ -9,7 +9,9 @@ var container_id: int
 func _ready() -> void:
 	# Register the container with the Inventory system
 	container_id = Inventory.register_container(self)
-
+	inventory_data.inventory_changed.connect(func():
+		on_inventory_updated.emit()
+	)
 	if multiplayer.is_server():
 		# Sync the container data with all clients
 		var encoded_data = inventory_data.net_encode()
@@ -32,4 +34,8 @@ func interact() -> void:
 # will get called by Inventory manager when the container is updated
 func update_inventory(data: InventoryData) -> void:
 	inventory_data = data
+	on_inventory_updated.emit()
+
+func update_inventory_from_network(encoded: Array) -> void:
+	inventory_data.update_from_network(encoded)
 	on_inventory_updated.emit()

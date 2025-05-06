@@ -39,9 +39,17 @@ func _ready() -> void:
 		inventory.inventory_data = data
 		inventory.redraw_inventory()
 	)
-	
+
 	container_inventory.inventory_data = container_data
-	
+
+	# Listen for inventory data changes to trigger redraws
+	inventory_data.inventory_changed.connect(func():
+		inventory.redraw_inventory()
+	)
+	container_data.inventory_changed.connect(func():
+		container_inventory.redraw_inventory()
+	)
+
 	inventory.on_slot_click_down.connect(func(index: int):
 		if inventory_data.slots[index]:
 			grabbed_slot.slot_data = inventory_data.slots[index]
@@ -49,12 +57,13 @@ func _ready() -> void:
 		pass
 	)
 	inventory.on_slot_click_up.connect(func(index: int):
-		_swap_slots(inventory_data, index, hovered_inventory.inventory_data, hovered_index)
+		# Use centralized move logic
+		inventory_data.move_to(index, hovered_inventory.inventory_data, hovered_index)
 
 		if hovered_inventory == container_inventory:
 			# send the new data to the server
 			Inventory.send_container_data.rpc_id(1, open_container.container_id, container_data.net_encode())
-			
+		
 		Inventory.update_player_inventory.rpc_id(1, inventory_data.net_encode())
 		grabbed_slot.slot_data = null
 		grabbed_slot.visible = false
@@ -71,7 +80,8 @@ func _ready() -> void:
 			grabbed_slot.visible = true
 	)
 	container_inventory.on_slot_click_up.connect(func(index: int):
-		_swap_slots(container_data, index, hovered_inventory.inventory_data, hovered_index)
+		# Use centralized move logic
+		container_data.move_to(index, hovered_inventory.inventory_data, hovered_index)
 
 		# send the new data to the server
 		Inventory.send_container_data.rpc_id(1, open_container.container_id, container_data.net_encode())
@@ -89,17 +99,6 @@ func _container_updated() -> void:
 	container_data = open_container.inventory_data
 	container_inventory.inventory_data = container_data
 	container_inventory.redraw_inventory()
-
-func _swap_slots(_inventory_data: InventoryData, index: int, \
-	other_inventory_data: InventoryData, other_index: int) -> void:
-	# drop the item into the inventory data, and if anything is return swap it to the source index
-	var dest = other_inventory_data.slots[other_index]
-	other_inventory_data.slots[other_index] = grabbed_slot.slot_data
-	_inventory_data.slots[index] = dest
-
-	hovered_inventory.redraw_inventory()
-	inventory.redraw_inventory()
-
 
 func _physics_process(_delta: float) -> void:
 	if grabbed_slot.visible:

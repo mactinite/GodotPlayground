@@ -8,7 +8,7 @@
 [sub_resource type="Resource" id="Resource_medxy"]
 script = ExtResource("2_medxy")
 item = ExtResource("3_medxy")
-count = 2
+count = 9
 metadata/_custom_type_script = "uid://b17i1d5yt7kiu"
 
 [sub_resource type="Resource" id="Resource_rqfdv"]
