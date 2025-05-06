@@ -1,12 +1,6 @@
 extends Panel
 class_name SlotUI
 
-signal on_left_click_down()
-signal on_right_click_down()
-
-signal on_left_click_released()
-signal on_right_click_released()
-
 @export var icon: TextureRect
 @export var label: Label
 @export var disabled_color: Color
@@ -28,10 +22,6 @@ var parent_inventory: InventoryData
 
 func _ready() -> void:
 	baseColor = modulate
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
 
 func _update_components() -> void:
 	if slot_data && slot_data.item:
@@ -59,19 +49,6 @@ func _on_mouse_exited() -> void:
 	modulate = baseColor
 	hovered = false
 	pass # Replace with function body.
-
-
-func _on_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		match [event.is_pressed(), event.button_index]:
-			[true, MOUSE_BUTTON_LEFT]:
-				on_left_click_down.emit()
-			[false, MOUSE_BUTTON_LEFT]:
-				on_left_click_released.emit()
-			[true, MOUSE_BUTTON_RIGHT]:
-				on_right_click_down.emit()
-			[false, MOUSE_BUTTON_RIGHT]:
-				on_right_click_released.emit()
 
 func _get_drag_data(_pos):
 	if slot_data && slot_data.item:
