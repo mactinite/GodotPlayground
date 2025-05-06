@@ -25,8 +25,9 @@ func redraw_inventory() -> void:
 	
 	for i in inventory_data.slots.size():
 		var slot_ui: SlotUI = slot_scene.instantiate()
-		slot_ui.slot_data = inventory_data.slots[i];
-
+		slot_ui.slot_data = inventory_data.slots[i]
+		slot_ui.slot_index = i
+		slot_ui.parent_inventory = inventory_data
 
 		slot_ui.on_left_click_down.connect(func():
 			on_slot_click_down.emit(i)

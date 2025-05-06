@@ -23,6 +23,8 @@ var slot_data: InventorySlot:
 
 var baseColor: Color
 var hovered: bool
+var slot_index: int
+var parent_inventory: InventoryData
 
 func _ready() -> void:
 	baseColor = modulate
@@ -70,3 +72,20 @@ func _on_gui_input(event: InputEvent) -> void:
 				on_right_click_down.emit()
 			[false, MOUSE_BUTTON_RIGHT]:
 				on_right_click_released.emit()
+
+func _get_drag_data(_pos):
+	if slot_data && slot_data.item:
+		var drag_preview = duplicate()
+		set_drag_preview(drag_preview)
+		return {
+			"inventory": parent_inventory,
+			"slot_index": slot_index
+		}
+
+func _can_drop_data(_pos, data):
+	return data.has("inventory") and data.has("slot_index")
+
+func _drop_data(_pos, data):
+	if _can_drop_data(_pos, data):
+		# Move the item from the source to this slot
+		data["inventory"].move_to(data["slot_index"], parent_inventory, slot_index)
