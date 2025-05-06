@@ -107,8 +107,8 @@ func _drop_data(_pos, data):
 				slot_data.count = max_stack
 				source_slot.count = total - max_stack
 				source_inventory.slots[source_index] = source_slot
-			parent_inventory.emit_signal("inventory_changed")
-			source_inventory.emit_signal("inventory_changed")
+			parent_inventory.inventory_changed.emit()
+			source_inventory.inventory_changed.emit()
 		else:
 			# Move as normal
 			source_inventory.move_to(source_index, parent_inventory, slot_index)
