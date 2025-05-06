@@ -19,9 +19,11 @@ func _ready() -> void:
 
 @rpc("authority", "call_local")
 func player_inventory_updated(encoded: Array):
-
 	if player_inventory == null:
 		player_inventory = InventoryData.net_decode(encoded)
+		player_inventory.inventory_changed.connect(func():
+			on_player_inventory_update.emit(player_inventory)
+		)
 	else:
 		player_inventory.update_from_network(encoded)
 	

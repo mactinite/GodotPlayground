@@ -39,19 +39,6 @@ func _ready() -> void:
 		inventory.redraw_inventory()
 	)
 
-	container_inventory.inventory_data = container_data
-
-	# Listen for inventory data changes to trigger redraws
-	inventory_data.inventory_changed.connect(func():
-		inventory.redraw_inventory()
-	)
-	container_data.inventory_changed.connect(func():
-		container_inventory.redraw_inventory()
-	)
-
-	# No more grabbed_slot logic needed
-	# Drag-and-drop is now handled by SlotUI/InventoryComponent
-
 	inventory.on_slot_hovered.connect(func(i: int):
 		hovered_index = i
 		hovered_inventory = inventory

@@ -29,15 +29,6 @@ func redraw_inventory() -> void:
 		slot_ui.slot_index = i
 		slot_ui.parent_inventory = inventory_data
 
-		slot_ui.on_left_click_down.connect(func():
-			on_slot_click_down.emit(i)
-		)
-		
-		slot_ui.on_left_click_released.connect(func():
-			on_slot_click_up.emit(i)
-			redraw_inventory()
-		)
-		
 		slot_ui.mouse_entered.connect(func():
 			on_slot_hovered.emit(i)
 		)

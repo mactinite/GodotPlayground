@@ -27,7 +27,6 @@ func net_encode() -> Array:
 	var encoded_array: Array
 	for slot in slots:
 		encoded_array.append(slot.net_encode() if slot else null)
-	print(encoded_array)
 	return encoded_array
 
 # creates a new instance of InventoryData
