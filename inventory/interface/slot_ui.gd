@@ -83,9 +83,32 @@ func _get_drag_data(_pos):
 		}
 
 func _can_drop_data(_pos, data):
-	return data.has("inventory") and data.has("slot_index")
+	if !(data.has("inventory") and data.has("slot_index")):
+		return false
+	var source_slot: InventorySlot = data["inventory"].slots[data["slot_index"]]
+	if !slot_data or !slot_data.item or !source_slot or !source_slot.item:
+		return true # Allow moving to empty or from empty
+	# Check for stackable and same item
+	return slot_data.item.stackable and source_slot.item.stackable and slot_data.item.get_hash() == source_slot.item.get_hash()
 
 func _drop_data(_pos, data):
 	if _can_drop_data(_pos, data):
-		# Move the item from the source to this slot
-		data["inventory"].move_to(data["slot_index"], parent_inventory, slot_index)
+		var source_inventory = data["inventory"]
+		var source_index = data["slot_index"]
+		var source_slot: InventorySlot = source_inventory.slots[source_index]
+		if slot_data and slot_data.item and source_slot and source_slot.item and slot_data.item.get_hash() == source_slot.item.get_hash() and slot_data.item.stackable:
+			# Merge stacks
+			var total = slot_data.count + source_slot.count
+			var max_stack = slot_data.item.max_stack
+			if total <= max_stack:
+				slot_data.count = total
+				source_inventory.slots[source_index] = null
+			else:
+				slot_data.count = max_stack
+				source_slot.count = total - max_stack
+				source_inventory.slots[source_index] = source_slot
+			parent_inventory.emit_signal("inventory_changed")
+			source_inventory.emit_signal("inventory_changed")
+		else:
+			# Move as normal
+			source_inventory.move_to(source_index, parent_inventory, slot_index)
