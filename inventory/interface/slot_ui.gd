@@ -51,22 +51,37 @@ func _on_mouse_exited() -> void:
 	pass # Replace with function body.
 
 func _get_drag_data(_pos):
-	if slot_data && slot_data.item:
-		var drag_preview = duplicate()
-		set_drag_preview(drag_preview)
-		return {
-			"inventory": parent_inventory,
-			"slot_index": slot_index
-		}
+	if !slot_data || !slot_data.item:
+		return null
+	var drag_preview = duplicate()
+	set_drag_preview(drag_preview)
+	return {
+		"inventory": parent_inventory,
+		"slot_index": slot_index
+	}
 
 func _can_drop_data(_pos, data):
 	if !(data.has("inventory") and data.has("slot_index")):
 		return false
+		
 	var source_slot: InventorySlot = data["inventory"].slots[data["slot_index"]]
+	# Drag and Drop rules
+
 	if !slot_data or !slot_data.item or !source_slot or !source_slot.item:
 		return true # Allow moving to empty or from empty
-	# Check for stackable and same item
-	return slot_data.item.stackable and source_slot.item.stackable and slot_data.item.get_hash() == source_slot.item.get_hash()
+
+	# Check if the destination slot is the same as the source slot
+	if data["inventory"] == parent_inventory and data["slot_index"] == slot_index:
+		return false # Prevent dropping on the same slot
+
+	if slot_data.item.get_hash() != source_slot.item.get_hash():
+		return false # Different items
+
+	# Check if the item is stackable and if the destination slot can accept any more items
+	if slot_data.item.stackable and source_slot.item.stackable:
+		return slot_data.count < slot_data.item.max_stack
+
+	return false # Not stackable
 
 func _drop_data(_pos, data):
 	if _can_drop_data(_pos, data):
