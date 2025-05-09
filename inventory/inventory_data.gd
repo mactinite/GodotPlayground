@@ -2,6 +2,7 @@ extends Resource
 class_name InventoryData
 
 signal inventory_changed
+signal inventory_changed_remote
 
 @export var slots: Array[InventorySlot]
 
@@ -20,7 +21,7 @@ func update_from_network(encoded_array: Array) -> void:
 	for encoded_slot in encoded_array:
 		var instanced_slot = InventorySlot.net_decode(encoded_slot if encoded_slot else [])
 		slots.append(instanced_slot)
-	inventory_changed.emit()
+	inventory_changed_remote.emit()
 
 # encodes (hopefully) an instance into a network serializable size
 func net_encode() -> Array:

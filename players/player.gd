@@ -6,7 +6,6 @@ extends CharacterBody3D
 @onready var crouch_collision_shape: CollisionShape3D = $crouch_collision_shape
 @onready var standing_collision_shape: CollisionShape3D = $standing_collision_shape
 @onready var uncrouch_raycast: RayCast3D = $uncrouch_raycast
-@onready var hud: Control = $head/HUD
 @onready var camera_3d: Camera3D = $head/Camera3D
 @onready var player_grab: Node = $player_grab
 

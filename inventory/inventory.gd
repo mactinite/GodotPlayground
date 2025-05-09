@@ -22,6 +22,10 @@ func player_inventory_updated(encoded: Array):
 	if player_inventory == null:
 		player_inventory = InventoryData.net_decode(encoded)
 		player_inventory.inventory_changed.connect(func():
+			update_player_inventory.rpc_id(1, player_inventory.net_encode())
+			on_player_inventory_update.emit(player_inventory)
+		)
+		player_inventory.inventory_changed_remote.connect(func():
 			on_player_inventory_update.emit(player_inventory)
 		)
 	else:

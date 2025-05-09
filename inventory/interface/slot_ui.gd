@@ -20,6 +20,7 @@ var hovered: bool
 var slot_index: int
 var parent_inventory: InventoryData
 
+
 func _ready() -> void:
 	baseColor = modulate
 
@@ -50,11 +51,47 @@ func _on_mouse_exited() -> void:
 	hovered = false
 	pass # Replace with function body.
 
+func _gui_input(event):
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_RIGHT && event.pressed:
+			if !slot_data || !slot_data.item || !slot_data.item.stackable || slot_data.count <= 1:
+				return # Ignore if no item in slot or not stackable or count is 1
+			var drag_preview = duplicate()
+			var preview_slot_data = slot_data.duplicate()
+			preview_slot_data.count = int(floor(slot_data.count / float(2)))
+			drag_preview.slot_data = preview_slot_data
+
+			# Godot will call _get_drag_data next
+			force_drag(
+				{
+					"inventory": parent_inventory,
+					"slot_index": slot_index,
+					"split": true,
+					"split_count": int(slot_data.count / float(2))
+				},
+				drag_preview
+			)
+		
+func _input(event: InputEvent) -> void:
+	# if we are dragging we need to fake a left click for the drag to finish
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_RIGHT && !event.pressed:
+			if get_viewport().gui_is_dragging():
+				# Cancel right click drag by pushing a fake mouse button event
+				var fakePush = event.duplicate()
+				fakePush.button_index = MOUSE_BUTTON_LEFT
+				# convert to canvas item local coordinates
+				fakePush = self.make_input_local(fakePush)
+				Input.parse_input_event(fakePush)
+				return
+			
 func _get_drag_data(_pos):
 	if !slot_data || !slot_data.item:
 		return null
 	var drag_preview = duplicate()
+
 	set_drag_preview(drag_preview)
+	
 	return {
 		"inventory": parent_inventory,
 		"slot_index": slot_index
@@ -84,23 +121,48 @@ func _can_drop_data(_pos, data):
 	return false # Not stackable
 
 func _drop_data(_pos, data):
-	if _can_drop_data(_pos, data):
-		var source_inventory = data["inventory"]
-		var source_index = data["slot_index"]
-		var source_slot: InventorySlot = source_inventory.slots[source_index]
-		if slot_data and slot_data.item and source_slot and source_slot.item and slot_data.item.get_hash() == source_slot.item.get_hash() and slot_data.item.stackable:
-			# Merge stacks
-			var total = slot_data.count + source_slot.count
-			var max_stack = slot_data.item.max_stack
-			if total <= max_stack:
-				slot_data.count = total
+	var source_inventory = data["inventory"]
+	var source_index = data["slot_index"]
+	var source_slot: InventorySlot = source_inventory.slots[source_index]
+	if data.has("split") and data["split"] and source_slot and source_slot.item and source_slot.count > 1:
+		# Handle split stack drop
+		var move_count = int(floor(data["split_count"]))
+		if !slot_data or !slot_data.item:
+			# Place split stack in empty slot
+			parent_inventory.slots[slot_index] = source_slot.duplicate()
+			parent_inventory.slots[slot_index].count = move_count
+			source_slot.count -= move_count
+			if source_slot.count <= 0:
 				source_inventory.slots[source_index] = null
-			else:
-				slot_data.count = max_stack
-				source_slot.count = total - max_stack
-				source_inventory.slots[source_index] = source_slot
 			parent_inventory.inventory_changed.emit()
 			source_inventory.inventory_changed.emit()
+			return
+		elif slot_data.item.get_hash() == source_slot.item.get_hash() and slot_data.item.stackable:
+			# Merge split stack into existing stack
+			var can_add = slot_data.item.max_stack - slot_data.count
+			var to_add = min(move_count, can_add)
+			slot_data.count += to_add
+			source_slot.count -= to_add
+			if source_slot.count <= 0:
+				source_inventory.slots[source_index] = null
+			parent_inventory.inventory_changed.emit()
+			source_inventory.inventory_changed.emit()
+			return
+		# If can't merge, do nothing
+		return
+	# Merge stacks (normal drag)
+	if slot_data and slot_data.item and source_slot and source_slot.item and slot_data.item.get_hash() == source_slot.item.get_hash() and slot_data.item.stackable:
+		var total = slot_data.count + source_slot.count
+		var max_stack = slot_data.item.max_stack
+		if total <= max_stack:
+			slot_data.count = total
+			source_inventory.slots[source_index] = null
 		else:
-			# Move as normal
-			source_inventory.move_to(source_index, parent_inventory, slot_index)
+			slot_data.count = max_stack
+			source_slot.count = total - max_stack
+			source_inventory.slots[source_index] = source_slot
+		parent_inventory.inventory_changed.emit()
+		source_inventory.inventory_changed.emit()
+	else:
+		# Move as normal
+		source_inventory.move_to(source_index, parent_inventory, slot_index)
