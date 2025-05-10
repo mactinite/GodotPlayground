@@ -27,6 +27,7 @@ Constants="*res://core/constants.gd"
 NetworkManager="*res://multiplayer/network_manager.gd"
 SceneManager="*res://core/scene_manager.gd"
 Inventory="*res://inventory/inventory.gd"
+TimeManager="*res://day-night-cycle/time_manager.gd"
 
 [display]
 

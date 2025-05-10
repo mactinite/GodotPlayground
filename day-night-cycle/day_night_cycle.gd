@@ -4,10 +4,8 @@ extends Node3D
 @export var sun_light: DirectionalLight3D
 @export var day_material: ShaderMaterial
 @export var night_material: ShaderMaterial
+@export var dusk_material: ShaderMaterial
 
-
-var time_of_day := 0.0 # 0.0 = midnight, 0.5 = noon, 1.0 = next midnight
-const SECONDS_PER_DAY := 60.0 # 1 min real time = 1 day (24h)
 
 # Sun and moon light settings
 @export var sun_color: Color = Color(1.0, 0.95, 0.8)
@@ -15,46 +13,52 @@ const SECONDS_PER_DAY := 60.0 # 1 min real time = 1 day (24h)
 @export var sun_energy: float = 1.0
 @export var moon_energy: float = 0.2
 
-
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	TimeManager.time_updated.connect(_on_time_updated)
 
 @export var day_night_curve: Curve
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	time_of_day += delta / SECONDS_PER_DAY
-	time_of_day = fmod(time_of_day, 1.0)
-	_update_sky_shader()
-	_update_sun_rotation()
+# Utility: 3-way lerp for night, dusk, day
+func lerp3(night_val, dusk_val, day_val, t: float) -> Variant:
+	# t: 0 = night, 0.5 = dusk, 1 = day
+	if t <= 0.5:
+		return lerp(night_val, dusk_val, t * 2.0)
+	else:
+		return lerp(dusk_val, day_val, (t - 0.5) * 2.0)
 
-func _get_blend() -> float:
+func _get_blend(time_of_day: float) -> float:
 	# Use the curve to control the blend factor (0 = night, 1 = day)
 	if day_night_curve:
 		return clamp(day_night_curve.sample(time_of_day), 0.0, 1.0)
 	else:
 		return clamp(sin(time_of_day * PI * 2.0 - PI / 2.0) * 0.5 + 0.5, 0.0, 1.0)
 
-func _update_sky_shader():
-	# Blend factor: 0 = night, 1 = day, smooth transition
-	var blend: float = _get_blend()
-	# Debug: print blend value
-	#print("Blend factor: ", blend)
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(_delta: float) -> void:
+	pass # Time is now managed by time_manager
+
+func _on_time_updated(time_of_day: float) -> void:
+	_update_sky_shader(time_of_day)
+	_update_sun_rotation(time_of_day)
+
+func _update_sky_shader(time_of_day: float):
+	var blend: float = _get_blend(time_of_day) # 0=night, 0.5=dusk, 1=day
 	var env = world_environment.environment
-	if env and env.sky and env.sky.sky_material and env.sky.sky_material is ShaderMaterial and day_material and night_material:
+	if env and env.sky and env.sky.sky_material and env.sky.sky_material is ShaderMaterial and day_material and night_material and dusk_material:
 		var mat: ShaderMaterial = env.sky.sky_material
 		for parameter in mat.shader.get_shader_uniform_list():
 			var day_val = day_material.get_shader_parameter(parameter.name)
 			var night_val = night_material.get_shader_parameter(parameter.name)
+			var dusk_val = dusk_material.get_shader_parameter(parameter.name)
 			var val = day_val
-			if typeof(day_val) in [TYPE_FLOAT, TYPE_INT, TYPE_COLOR]:
-				val = lerp(night_val, day_val, blend)
+			if typeof(day_val) in [TYPE_FLOAT, TYPE_COLOR]:
+				val = lerp3(night_val, dusk_val, day_val, float(blend))
+			elif typeof(day_val) == TYPE_INT:
+				val = int(round(lerp3(float(night_val), float(dusk_val), float(day_val), float(blend))))
 			mat.set_shader_parameter(parameter.name, val)
 
-func _update_sun_rotation():
+func _update_sun_rotation(time_of_day: float):
 	if sun_light:
-		# 0.0 = midnight (below horizon), 0.25 = sunrise, 0.5 = noon, 0.75 = sunset
 		var sun_angle = time_of_day * 360.0 + 90.0
-		# Sun moves in X axis (pitch)
 		sun_light.rotation_degrees.x = sun_angle
