@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ckpliqxkae2k1"
-path.s3tc="res://.godot/imported/burger.png-cbd6b5d5c889d2d676d405b31eefbcb7.s3tc.ctex"
+uid="uid://chdm4xpk7f1vy"
+path.s3tc="res://.godot/imported/sun-cookie.png-7b7727982d920abfb59d2192f85599f7.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/kenney_food-kit/Previews/burger.png"
-dest_files=["res://.godot/imported/burger.png-cbd6b5d5c889d2d676d405b31eefbcb7.s3tc.ctex"]
+source_file="res://day-night-cycle/sun-cookie.png"
+dest_files=["res://.godot/imported/sun-cookie.png-7b7727982d920abfb59d2192f85599f7.s3tc.ctex"]
 
 [params]
 
