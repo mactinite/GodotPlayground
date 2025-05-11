@@ -62,6 +62,7 @@ uniform float sunset_width : hint_range(0.01, 0.5, 0.01) = 0.08; // Increased ma
 uniform float sunset_view_width : hint_range(0.01, 1.0, 0.01) = 0.25; // Increased max to 1.0 for more control
 uniform float night_transition_width : hint_range(0.01, 0.25, 0.01) = 0.12;
 uniform vec3 night_sky_color : source_color = vec3(0.04, 0.07, 0.15);
+uniform float sunset_offset : hint_range(-0.5, 0.5, 0.01) = 0.0; // Controls when sunset starts (negative = earlier, positive = later)
 
 float rand(float n){return fract(sin(n) * 43758.5453123);}
 
@@ -220,7 +221,8 @@ void sky() {
 	vec3 rayleigh_color = rayleigh_coeff * phase * rayleigh_strength;
 	rayleigh_color = max(rayleigh_color, vec3(0.01, 0.02, 0.04)); // Prevents hard black
 	// --- Smooth sunset/sunrise glow ---
-	float sunset_elevation = exp(-pow(sun_elevation / sunset_width, 2.0)); // Bell curve at horizon
+	// Make sunset/sunrise start sooner and end later by widening the bell curve
+	float sunset_elevation = exp(-pow((sun_elevation - sunset_offset) / sunset_width, 2.0));
 	float view_sunset = exp(-pow((1.0 - dot(normalize(EYEDIR), normalize(LIGHT0_DIRECTION))) / sunset_view_width, 2.0));
 	float sunset_glow = sunset_elevation * view_sunset * (1.0 - night_factor) * sunset_intensity;
 	vec3 sunset = sunset_color * sunset_glow;
@@ -239,6 +241,9 @@ void sky() {
 	vec3 sky_color = base_sky + min_ambient;
 
 	// --- Add night sky color softly ---
+	// Blend sunset in before night blend for a smoother transition
+	float sunset_night_blend = smoothstep(0.6, 1.0, night_factor); // Adjust range for when sunset fades out into night
+	sky_color = mix(sunset, sky_color, sunset_night_blend);
 	sky_color = mix(night_sky_color, sky_color, night_factor);
 
 	// Stars

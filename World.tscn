@@ -79,7 +79,7 @@ moon_light = NodePath("Moon")
 moon_phase_textures = Array[Texture2D]([ExtResource("11_0to5b"), ExtResource("12_5j71u"), ExtResource("13_jyqkj"), ExtResource("14_ydbc3"), ExtResource("15_aj1ai"), ExtResource("16_d7dfr"), ExtResource("17_c2gv2"), ExtResource("18_rp4qs")])
 
 [node name="Sun" type="DirectionalLight3D" parent="environment/Day Night Cycle"]
-transform = Transform3D(0.0949792, 0.0926777, 0.991156, -0.994155, 0.060174, 0.0896401, -0.0513341, -0.993876, 0.0978513, 0, 0, 0)
+transform = Transform3D(0.0706424, 0.887133, 0.456076, -0.431219, -0.385128, 0.815921, 0.899477, -0.254307, 0.355342, 0, 0, 0)
 shadow_enabled = true
 directional_shadow_pancake_size = 23.0
 
