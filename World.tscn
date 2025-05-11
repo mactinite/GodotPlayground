@@ -1,18 +1,23 @@
-[gd_scene load_steps=32 format=3 uid="uid://xv1k3wuhqavi"]
+[gd_scene load_steps=27 format=3 uid="uid://xv1k3wuhqavi"]
 
 [ext_resource type="Texture2D" uid="uid://b8118oep1e568" path="res://kenney_prototype-textures/PNG/Dark/texture_07.png" id="1_2dftf"]
 [ext_resource type="Texture2D" uid="uid://drho6vpg1tfpa" path="res://kenney_prototype-textures/PNG/Orange/texture_02.png" id="2_js7pq"]
 [ext_resource type="Material" uid="uid://ime7vx5trv6j" path="res://day-night-cycle/DaytimeSkyMaterial.tres" id="4_bah7m"]
 [ext_resource type="Material" uid="uid://dtn1d233i330d" path="res://day-night-cycle/DawnDuskSkyMaterial.tres" id="4_fvag4"]
 [ext_resource type="Script" uid="uid://cci0lp62aunmc" path="res://multiplayer/network_rb.gd" id="4_p1v5b"]
-[ext_resource type="Shader" uid="uid://d3rpy57c3fljn" path="res://day-night-cycle/stylized-sky.gdshader" id="4_wygdx"]
-[ext_resource type="Texture2D" uid="uid://i5e6unejcepd" path="res://day-night-cycle/moon-cookie.png" id="5_b2ar6"]
 [ext_resource type="PackedScene" uid="uid://cmkodeg0ejtll" path="res://assets/Chest.glb" id="5_eu7l1"]
 [ext_resource type="Script" uid="uid://co8u2eh0b6t0p" path="res://inventory/container.gd" id="5_p1v5b"]
-[ext_resource type="Texture2D" uid="uid://chdm4xpk7f1vy" path="res://day-night-cycle/sun-cookie.png" id="6_ee7l0"]
 [ext_resource type="Script" uid="uid://sktoy6xiau7k" path="res://day-night-cycle/day_night_cycle.gd" id="6_fv4w7"]
 [ext_resource type="Material" uid="uid://dkfq37ljq2bps" path="res://day-night-cycle/NightTimeSkyMaterial.tres" id="6_fvag4"]
 [ext_resource type="Resource" uid="uid://qwdj5ixt6xok" path="res://inventory/data/Test_Inventory.tres" id="6_wygdx"]
+[ext_resource type="Texture2D" uid="uid://djodmjcoaj1ih" path="res://day-night-cycle/moon_phases/moon00.png" id="11_0to5b"]
+[ext_resource type="Texture2D" uid="uid://chxix7s3umaup" path="res://day-night-cycle/moon_phases/moon01.png" id="12_5j71u"]
+[ext_resource type="Texture2D" uid="uid://b4hj7xby841xa" path="res://day-night-cycle/moon_phases/moon02.png" id="13_jyqkj"]
+[ext_resource type="Texture2D" uid="uid://3s6x51exbu8w" path="res://day-night-cycle/moon_phases/moon03.png" id="14_ydbc3"]
+[ext_resource type="Texture2D" uid="uid://dpprlsdb614op" path="res://day-night-cycle/moon_phases/moon04.png" id="15_aj1ai"]
+[ext_resource type="Texture2D" uid="uid://bulv2wikw8kyw" path="res://day-night-cycle/moon_phases/moon05.png" id="16_d7dfr"]
+[ext_resource type="Texture2D" uid="uid://clwtcvkb07eui" path="res://day-night-cycle/moon_phases/moon06.png" id="17_c2gv2"]
+[ext_resource type="Texture2D" uid="uid://tumhagksk5pq" path="res://day-night-cycle/moon_phases/moon07.png" id="18_rp4qs"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bcbcq"]
 albedo_texture = ExtResource("1_2dftf")
@@ -27,87 +32,12 @@ uv1_triplanar = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_eu7l1"]
 
-[sub_resource type="Curve" id="Curve_fv4w7"]
-_data = [Vector2(0, 0), 0.0, 5.19332, 0, 0, Vector2(0.497423, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -5.42593, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="CurveTexture" id="CurveTexture_fvag4"]
-width = 512
-curve = SubResource("Curve_fv4w7")
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_kva58"]
-frequency = 0.0192
-domain_warp_enabled = true
-domain_warp_type = 2
-domain_warp_fractal_lacunarity = 2.0
-domain_warp_fractal_gain = 0.2
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_f5c0m"]
-width = 128
-height = 128
-seamless = true
-noise = SubResource("FastNoiseLite_kva58")
-
-[sub_resource type="Gradient" id="Gradient_b2ar6"]
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_ee7l0"]
-noise_type = 3
-frequency = 0.0242
-fractal_octaves = 4
-fractal_weighted_strength = 0.19
-domain_warp_amplitude = 60.695
-domain_warp_frequency = -0.04
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_gn8l5"]
-width = 128
-height = 128
-in_3d_space = true
-seamless = true
-color_ramp = SubResource("Gradient_b2ar6")
-noise = SubResource("FastNoiseLite_ee7l0")
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_6w02q"]
-noise_type = 0
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1fphk"]
-seamless = true
-noise = SubResource("FastNoiseLite_6w02q")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_gn8l5"]
-shader = ExtResource("4_wygdx")
-shader_parameter/cloud_shape_sampler = SubResource("NoiseTexture2D_gn8l5")
-shader_parameter/cloud_noise_sampler = SubResource("NoiseTexture2D_f5c0m")
-shader_parameter/cloud_curves = SubResource("CurveTexture_fvag4")
-shader_parameter/clouds_samples = 32
-shader_parameter/shadow_sample = 4
-shader_parameter/clouds_density = 0.2
-shader_parameter/clouds_scale = 0.5
-shader_parameter/clouds_smoothness = 0.035
-shader_parameter/clouds_light_color = Color(0.80923, 0.909986, 1, 1)
-shader_parameter/clouds_shadow_intensity = 6.3
-shader_parameter/high_clouds_sampler = SubResource("NoiseTexture2D_1fphk")
-shader_parameter/high_clouds_density = 0.2
-shader_parameter/top_color = Color(0.126607, 0.732705, 1, 1)
-shader_parameter/bottom_color = Color(0.716914, 0.474019, 0.28096, 1)
-shader_parameter/sun_scatter = Color(0.710418, 0.510023, 0.315452, 1)
-shader_parameter/sun_tint = Color(0.915323, 0.896641, 0.861794, 1)
-shader_parameter/sun_sampler = ExtResource("6_ee7l0")
-shader_parameter/sun_scale = 2.0
-shader_parameter/sun_intensity = 1.0
-shader_parameter/moon_tint = Color(0.7, 0.7, 1, 1)
-shader_parameter/moon_sampler = ExtResource("5_b2ar6")
-shader_parameter/moon_scale = 5.0
-shader_parameter/moon_intensity = 1.0
-shader_parameter/stars_intensity = 0.0
-shader_parameter/shooting_stars_intensity = 0.0
-shader_parameter/shooting_star_tint = Color(0, 0, 0, 1)
-
-[sub_resource type="Sky" id="Sky_bcbcq"]
-sky_material = SubResource("ShaderMaterial_gn8l5")
+[sub_resource type="Sky" id="Sky_sjtuv"]
+sky_material = ExtResource("4_bah7m")
 
 [sub_resource type="Environment" id="Environment_2dftf"]
 background_mode = 2
-sky = SubResource("Sky_bcbcq")
+sky = SubResource("Sky_sjtuv")
 tonemap_mode = 2
 glow_enabled = true
 
@@ -146,16 +76,6 @@ shape = SubResource("BoxShape3D_eu7l1")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="environment"]
 environment = SubResource("Environment_2dftf")
 
-[node name="Sun" type="DirectionalLight3D" parent="environment"]
-transform = Transform3D(1, 0, 0, 0, 0.998843, 0.0480828, 0, -0.0480828, 0.998843, 0, 6, 0)
-shadow_enabled = true
-
-[node name="Moon" type="DirectionalLight3D" parent="environment/Sun"]
-transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0)
-light_color = Color(0.633433, 0.625947, 1, 1)
-light_energy = 0.1
-shadow_enabled = true
-
 [node name="Day Night Cycle" type="Node3D" parent="environment" node_paths=PackedStringArray("world_environment", "sun_light")]
 script = ExtResource("6_fv4w7")
 world_environment = NodePath("../WorldEnvironment")
@@ -163,7 +83,19 @@ sun_light = NodePath("../Sun")
 day_material = ExtResource("4_bah7m")
 night_material = ExtResource("6_fvag4")
 dusk_material = ExtResource("4_fvag4")
+moon_phase_textures = Array[Texture2D]([ExtResource("11_0to5b"), ExtResource("12_5j71u"), ExtResource("13_jyqkj"), ExtResource("14_ydbc3"), ExtResource("15_aj1ai"), ExtResource("16_d7dfr"), ExtResource("17_c2gv2"), ExtResource("18_rp4qs")])
 day_night_curve = SubResource("Curve_f5c0m")
+
+[node name="Sun" type="DirectionalLight3D" parent="environment"]
+transform = Transform3D(1, 0, 0, 0, 0.929313, -0.369293, 0, 0.369293, 0.929313, 0, 200, 0)
+shadow_enabled = true
+directional_shadow_pancake_size = 23.0
+
+[node name="Moon" type="DirectionalLight3D" parent="environment/Sun"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+light_color = Color(0.633433, 0.625947, 1, 1)
+light_energy = 0.1
+shadow_enabled = true
 
 [node name="spawns" type="Node3D" parent="."]
 

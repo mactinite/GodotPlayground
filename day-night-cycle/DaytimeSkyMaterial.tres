@@ -2,7 +2,7 @@
 
 [ext_resource type="Shader" uid="uid://d3rpy57c3fljn" path="res://day-night-cycle/stylized-sky.gdshader" id="1_an3on"]
 [ext_resource type="Texture2D" uid="uid://chdm4xpk7f1vy" path="res://day-night-cycle/sun-cookie.png" id="2_gtbev"]
-[ext_resource type="Texture2D" uid="uid://i5e6unejcepd" path="res://day-night-cycle/moon-cookie.png" id="2_p1742"]
+[ext_resource type="Texture2D" uid="uid://dpprlsdb614op" path="res://day-night-cycle/moon_phases/moon04.png" id="2_p1742"]
 
 [sub_resource type="Curve" id="Curve_fv4w7"]
 _data = [Vector2(0, 0), 0.0, 5.19332, 0, 0, Vector2(0.497423, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -5.42593, 0.0, 0, 0]
@@ -64,12 +64,10 @@ shader_parameter/clouds_light_color = Color(0.80923, 0.909986, 1, 1)
 shader_parameter/clouds_shadow_intensity = 6.3
 shader_parameter/high_clouds_sampler = SubResource("NoiseTexture2D_1fphk")
 shader_parameter/high_clouds_density = 0.2
-shader_parameter/top_color = Color(6.16074e-06, 0.694084, 0.958994, 1)
 shader_parameter/bottom_color = Color(0.406087, 0.472592, 0.679061, 1)
-shader_parameter/sun_scatter = Color(0.340339, 0.340339, 0.340339, 1)
 shader_parameter/sun_tint = Color(0.915323, 0.896641, 0.861794, 1)
 shader_parameter/sun_sampler = ExtResource("2_gtbev")
-shader_parameter/sun_scale = 2.0
+shader_parameter/sun_scale = 6.1
 shader_parameter/sun_intensity = 1.0
 shader_parameter/moon_tint = Color(0.7, 0.7, 1, 1)
 shader_parameter/moon_sampler = ExtResource("2_p1742")
@@ -78,3 +76,12 @@ shader_parameter/moon_intensity = 1.0
 shader_parameter/stars_intensity = 0.0
 shader_parameter/shooting_stars_intensity = 0.0
 shader_parameter/shooting_star_tint = Color(0, 0, 0, 1)
+shader_parameter/rayleigh_strength = 0.0
+shader_parameter/rayleigh_falloff = 3.8
+shader_parameter/rayleigh_coeff = Color(0.608473, 0.792798, 1, 1)
+shader_parameter/sunset_color = Color(1, 0.468093, 0.19242, 1)
+shader_parameter/sunset_intensity = 1.39
+shader_parameter/sunset_width = 0.14
+shader_parameter/sunset_view_width = 0.5
+shader_parameter/night_transition_width = 0.1
+shader_parameter/night_sky_color = Color(0.0979003, 0.000165389, 0.192774, 1)

@@ -23,9 +23,7 @@ uniform float high_clouds_density : hint_range(0.0, 1.0, 0.05) = 0.0;
 
 group_uniforms sky;
 
-uniform vec3 top_color : source_color = vec3(1.0);
-uniform vec3 bottom_color : source_color = vec3(1.0);
-uniform vec3 sun_scatter : source_color = vec3(1.0);
+uniform vec3 bottom_color : source_color = vec3(0.5, 0.7, 1.0);
 
 group_uniforms sun;
 
@@ -50,6 +48,20 @@ group_uniforms shooting_stars;
 uniform float shooting_stars_intensity : hint_range(0.0, 10.0, 0.1) = 0.0;
 uniform sampler2D shooting_star_sampler : filter_linear, repeat_disable;
 uniform vec3 shooting_star_tint : source_color;
+
+group_uniforms rayleigh;
+// Rayleigh scattering uniforms
+uniform float rayleigh_strength : hint_range(0.0, 10.0, 0.1) = 2.0;
+uniform float rayleigh_falloff : hint_range(1.0, 8.0, 0.1) = 4.0;
+uniform vec3 rayleigh_coeff : source_color = vec3(0.5, 0.7, 1.0);
+
+// --- New uniforms for smooth transitions ---
+uniform vec3 sunset_color : source_color = vec3(1.0, 0.45, 0.15);
+uniform float sunset_intensity : hint_range(0.0, 2.0, 0.01) = 1.0;
+uniform float sunset_width : hint_range(0.01, 0.25, 0.01) = 0.08;
+uniform float sunset_view_width : hint_range(0.01, 0.5, 0.01) = 0.25;
+uniform float night_transition_width : hint_range(0.01, 0.25, 0.01) = 0.12;
+uniform vec3 night_sky_color : source_color = vec3(0.04, 0.07, 0.15);
 
 float rand(float n){return fract(sin(n) * 43758.5453123);}
 
@@ -189,25 +201,51 @@ void sky() {
 	vec4 sun_color = texture(sun_sampler, sun_uv);
 
 	// Moon is in the opposite direction
-	vec3 moon_dir = direction_to_matrix(-LIGHT0_DIRECTION) * EYEDIR;
-	vec2 moon_uv = (-(moon_dir.xy / moon_dir.z) * moon_scale) + vec2(0.5);
+	vec3 moon_dir = direction_to_matrix(LIGHT1_DIRECTION) * EYEDIR;
+
+	vec2 moon_uv = ((moon_dir.xy / moon_dir.z ) * moon_scale) + vec2(0.5);
 	float moon_mask = ceil(
 		clamp(moon_uv.x * (1.0 - moon_uv.x), 0.0, 1.0) *
 		clamp(moon_uv.y * (1.0 - moon_uv.y), 0.0, 1.0)
 	) * ceil(moon_dir.z);
 	vec4 moon_color = texture(moon_sampler, moon_uv);
 
-	// Sky color
+	// --- Smooth night/day transition ---
+	float sun_elevation = LIGHT0_DIRECTION.y;
+	float night_factor = smoothstep(0.0, night_transition_width, sun_elevation); // Wider, softer night transition
 
-	vec3 sky_gradient = mix(bottom_color.rgb, top_color.rgb, clamp(EYEDIR.y, 0.0, 1.0));
-	vec3 sunset_color = sun_scatter * (1.0 - horizon_mask);
-	vec3 sky_color = clamp(sky_gradient + sunset_color, 0.0, 1.0);
+	// --- Rayleigh scattering (fade softly at night) ---
+	float mu = dot(normalize(EYEDIR), normalize(LIGHT0_DIRECTION));
+	float phase = 0.75 * (1.0 + pow(mu, rayleigh_falloff));
+	vec3 rayleigh_color = rayleigh_coeff * phase * rayleigh_strength * (0.2 + 0.8 * night_factor); // Never fully zero
+
+	// --- Smooth sunset/sunrise glow ---
+	float sunset_elevation = exp(-pow(sun_elevation / sunset_width, 2.0)); // Bell curve at horizon
+	float view_sunset = exp(-pow((1.0 - dot(normalize(EYEDIR), normalize(LIGHT0_DIRECTION))) / sunset_view_width, 2.0));
+	float sunset_glow = sunset_elevation * view_sunset * (1.0 - night_factor) * sunset_intensity;
+	vec3 sunset = sunset_color * sunset_glow;
+
+	// --- Horizon/zenith blend ---
+	float horizon_blend = smoothstep(-0.15, 0.35, EYEDIR.y); // Wider, softer blend
+	vec3 base_sky = mix(sunset, rayleigh_color, horizon_blend);
+
+	// --- Minimum ambient, fades at night ---
+	vec3 min_ambient = mix(vec3(0.01, 0.02, 0.04), vec3(0.04, 0.07, 0.12), night_factor);
+	vec3 sky_color = max(base_sky, min_ambient);
+
+	// --- Add night sky color softly ---
+	sky_color = mix(night_sky_color, sky_color, night_factor);
 
 	// Stars
 
-	if(stars_intensity > 0.0){
+	// --- Stars: only visible in night sky regions ---
+	float stars_visibility = 1.0 - night_factor; // 1 at night, 0 at day
+	if(stars_intensity > 0.0 && stars_visibility > 0.01){
 		vec2 stars = voronoi(EYEDIR * 25.0).xz;
-		sky_color += smoothstep(0.025 + ((1.0 + sin(TIME + stars.y)) / 2.0) * 0.05, 0.0, stars.x) * stars_intensity;
+		float star_mask = smoothstep(0.025 + ((1.0 + sin(TIME + stars.y)) / 2.0) * 0.05, 0.0, stars.x);
+		// Fade in stars only in night sky regions
+		star_mask *= stars_visibility;
+		sky_color += star_mask * stars_intensity;
 	}
 
 	// Add shooting stars

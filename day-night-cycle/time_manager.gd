@@ -1,6 +1,6 @@
 extends Node
 
-@export var seconds_per_day: float = 60.0
+@export var seconds_per_day: float = 15.0
 
 signal time_updated(time_of_day: float)
 
