@@ -6,10 +6,35 @@ signal time_updated(time_of_day: float)
 
 var time_of_day := 0.0 # 0.0 = midnight, 0.5 = noon, 1.0 = next midnight
 
+const START_YEAR := 2000
+const DAYS_IN_MONTH := [31,28,31,30,31,30,31,31,30,31,30,31] # Non-leap year
+
+var year: int = START_YEAR
+var month: int = 1 # 1-12
+var day: int = 1 # 1-31
+
 func _process(delta: float) -> void:
 	time_of_day += delta / seconds_per_day
-	time_of_day = fmod(time_of_day, 1.0)
+	if time_of_day >= 1.0:
+		time_of_day = fmod(time_of_day, 1.0)
+		_increment_date()
 	time_updated.emit(time_of_day)
+
+func _increment_date():
+	day += 1
+	var days_this_month = DAYS_IN_MONTH[month - 1]
+	# Simple leap year check for February
+	if month == 2 and _is_leap_year(year):
+		days_this_month = 29
+	if day > days_this_month:
+		day = 1
+		month += 1
+		if month > 12:
+			month = 1
+			year += 1
+
+func _is_leap_year(y: int) -> bool:
+	return (y % 4 == 0 and (y % 100 != 0 or y % 400 == 0))
 
 func set_seconds_per_day(value: float) -> void:
 	seconds_per_day = max(value, 0.01)
@@ -17,3 +42,6 @@ func set_seconds_per_day(value: float) -> void:
 func set_time_of_day(value: float) -> void:
 	time_of_day = clamp(value, 0.0, 1.0)
 	time_updated.emit(time_of_day)
+
+func get_date() -> Dictionary:
+	return {"year": year, "month": month, "day": day}

@@ -1,9 +1,10 @@
-[gd_scene load_steps=19 format=3 uid="uid://gas7lotpits8"]
+[gd_scene load_steps=20 format=3 uid="uid://gas7lotpits8"]
 
 [ext_resource type="Script" uid="uid://dayjsygbe8t0k" path="res://core/main.gd" id="1_5vw27"]
 [ext_resource type="Script" uid="uid://603hhk4pggmc" path="res://players/player_spawner.gd" id="2_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://c8b00seg1kw7x" path="res://players/player_controller.tscn" id="3_h2yge"]
 [ext_resource type="Script" uid="uid://t6h2a4visf66" path="res://map_spawner.gd" id="4_dg77c"]
+[ext_resource type="Script" uid="uid://btteqvhpxhy3j" path="res://day-night-cycle/date_time_label.gd" id="7_074og"]
 [ext_resource type="Script" uid="uid://c0qfcyeqfduxh" path="res://menus.gd" id="8_5vw27"]
 [ext_resource type="Script" uid="uid://5u2toannoudo" path="res://inventory/interface/inventory_ui.gd" id="9_4c57u"]
 [ext_resource type="Script" uid="uid://g5g75s74f5na" path="res://lan_interface.gd" id="9_kek77"]
@@ -76,6 +77,17 @@ grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("13_ycdy4")
 stretch_mode = 3
+
+[node name="Label" type="Label" parent="UI/HUD"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -181.0
+offset_bottom = 23.0
+grow_horizontal = 0
+text = "April 29th, 1994 4:44PM"
+script = ExtResource("7_074og")
 
 [node name="Menus" type="Control" parent="UI"]
 layout_mode = 3
