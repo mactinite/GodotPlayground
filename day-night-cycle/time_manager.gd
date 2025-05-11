@@ -13,12 +13,21 @@ var year: int = START_YEAR
 var month: int = 1 # 1-12
 var day: int = 1 # 1-31
 
+var time_running := false
+
 func _process(delta: float) -> void:
-	time_of_day += delta / seconds_per_day
-	if time_of_day >= 1.0:
-		time_of_day = fmod(time_of_day, 1.0)
-		_increment_date()
-	time_updated.emit(time_of_day)
+	if time_running:
+		time_of_day += delta / seconds_per_day
+		if time_of_day >= 1.0:
+			time_of_day = fmod(time_of_day, 1.0)
+			_increment_date()
+		time_updated.emit(time_of_day)
+
+func start_time():
+	time_running = true
+
+func stop_time():
+	time_running = false
 
 func _increment_date():
 	day += 1
@@ -45,3 +54,16 @@ func set_time_of_day(value: float) -> void:
 
 func get_date() -> Dictionary:
 	return {"year": year, "month": month, "day": day}
+
+@rpc("authority")
+func sync_time_to_client(target_peer_id: int):
+	if multiplayer.is_server():
+		sync_time.rpc_id(target_peer_id, time_of_day, year, month, day)
+
+@rpc("any_peer")
+func sync_time(time_of_day_val: float, year_val: int, month_val: int, day_val: int):
+	time_of_day = time_of_day_val
+	year = year_val
+	month = month_val
+	day = day_val
+	time_updated.emit(time_of_day)

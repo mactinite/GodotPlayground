@@ -22,7 +22,9 @@ func server_disconnected() -> void:
 	
 #called on server and clients
 func _peer_connected(id):
-	print("Player Connected " + str(id) + ":" + "HOST" if multiplayer.is_server() else "CLIENT")
+	print("Player Connected " + str(id) + ":" + ("HOST" if multiplayer.is_server() else "CLIENT"))
+	if multiplayer.is_server():
+		TimeManager.sync_time_to_client(id)
 	pass
 
 #called on server and clients

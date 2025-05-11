@@ -29,6 +29,7 @@ func get_args() -> Dictionary:
 func start_game() -> void:
 	GameState.game_started = true
 	SignalBus.on_game_start.emit()
+	TimeManager.start_time()
 	if multiplayer.is_server():
 		main.map_spawner.spawn_map()
 		main.player_spawner.spawn_players()
