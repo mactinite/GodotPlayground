@@ -1,14 +1,12 @@
-[gd_scene load_steps=27 format=3 uid="uid://xv1k3wuhqavi"]
+[gd_scene load_steps=24 format=3 uid="uid://xv1k3wuhqavi"]
 
 [ext_resource type="Texture2D" uid="uid://b8118oep1e568" path="res://kenney_prototype-textures/PNG/Dark/texture_07.png" id="1_2dftf"]
 [ext_resource type="Texture2D" uid="uid://drho6vpg1tfpa" path="res://kenney_prototype-textures/PNG/Orange/texture_02.png" id="2_js7pq"]
-[ext_resource type="Material" uid="uid://ime7vx5trv6j" path="res://day-night-cycle/DaytimeSkyMaterial.tres" id="4_bah7m"]
-[ext_resource type="Material" uid="uid://dtn1d233i330d" path="res://day-night-cycle/DawnDuskSkyMaterial.tres" id="4_fvag4"]
+[ext_resource type="Material" uid="uid://ime7vx5trv6j" path="res://day-night-cycle/SkyMaterial.tres" id="4_bah7m"]
 [ext_resource type="Script" uid="uid://cci0lp62aunmc" path="res://multiplayer/network_rb.gd" id="4_p1v5b"]
 [ext_resource type="PackedScene" uid="uid://cmkodeg0ejtll" path="res://assets/Chest.glb" id="5_eu7l1"]
 [ext_resource type="Script" uid="uid://co8u2eh0b6t0p" path="res://inventory/container.gd" id="5_p1v5b"]
 [ext_resource type="Script" uid="uid://sktoy6xiau7k" path="res://day-night-cycle/day_night_cycle.gd" id="6_fv4w7"]
-[ext_resource type="Material" uid="uid://dkfq37ljq2bps" path="res://day-night-cycle/NightTimeSkyMaterial.tres" id="6_fvag4"]
 [ext_resource type="Resource" uid="uid://qwdj5ixt6xok" path="res://inventory/data/Test_Inventory.tres" id="6_wygdx"]
 [ext_resource type="Texture2D" uid="uid://djodmjcoaj1ih" path="res://day-night-cycle/moon_phases/moon00.png" id="11_0to5b"]
 [ext_resource type="Texture2D" uid="uid://chxix7s3umaup" path="res://day-night-cycle/moon_phases/moon01.png" id="12_5j71u"]
@@ -41,10 +39,6 @@ sky = SubResource("Sky_sjtuv")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="Curve" id="Curve_f5c0m"]
-_data = [Vector2(0.192857, 0), 0.0, -0.0582571, 0, 0, Vector2(0.407143, 1), 0.0, 0.0, 0, 0, Vector2(0.659524, 1), 0.0, 0.0, 0, 0, Vector2(0.833333, 0), 0.0, 0.0, 0, 0]
-point_count = 4
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_p1v5b"]
 
 [node name="World" type="Node3D"]
@@ -76,23 +70,21 @@ shape = SubResource("BoxShape3D_eu7l1")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="environment"]
 environment = SubResource("Environment_2dftf")
 
-[node name="Day Night Cycle" type="Node3D" parent="environment" node_paths=PackedStringArray("world_environment", "sun_light")]
+[node name="Day Night Cycle" type="Node3D" parent="environment" node_paths=PackedStringArray("world_environment", "sun_light", "moon_light")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1835, 0)
 script = ExtResource("6_fv4w7")
 world_environment = NodePath("../WorldEnvironment")
-sun_light = NodePath("../Sun")
-day_material = ExtResource("4_bah7m")
-night_material = ExtResource("6_fvag4")
-dusk_material = ExtResource("4_fvag4")
+sun_light = NodePath("Sun")
+moon_light = NodePath("Moon")
 moon_phase_textures = Array[Texture2D]([ExtResource("11_0to5b"), ExtResource("12_5j71u"), ExtResource("13_jyqkj"), ExtResource("14_ydbc3"), ExtResource("15_aj1ai"), ExtResource("16_d7dfr"), ExtResource("17_c2gv2"), ExtResource("18_rp4qs")])
-day_night_curve = SubResource("Curve_f5c0m")
 
-[node name="Sun" type="DirectionalLight3D" parent="environment"]
-transform = Transform3D(1, 0, 0, 0, 0.929313, -0.369293, 0, 0.369293, 0.929313, 0, 200, 0)
+[node name="Sun" type="DirectionalLight3D" parent="environment/Day Night Cycle"]
+transform = Transform3D(0.0949792, 0.0926777, 0.991156, -0.994155, 0.060174, 0.0896401, -0.0513341, -0.993876, 0.0978513, 0, 0, 0)
 shadow_enabled = true
 directional_shadow_pancake_size = 23.0
 
-[node name="Moon" type="DirectionalLight3D" parent="environment/Sun"]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+[node name="Moon" type="DirectionalLight3D" parent="environment/Day Night Cycle"]
+transform = Transform3D(1.91069e-15, -4.37114e-08, 1, -1, -4.37114e-08, 0, 4.37114e-08, -1, -4.37114e-08, 0, 0, 0)
 light_color = Color(0.633433, 0.625947, 1, 1)
 light_energy = 0.1
 shadow_enabled = true

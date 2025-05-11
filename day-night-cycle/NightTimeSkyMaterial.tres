@@ -1,6 +1,0 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dkfq37ljq2bps"]
-
-[ext_resource type="Shader" uid="uid://d3rpy57c3fljn" path="res://day-night-cycle/stylized-sky.gdshader" id="1_f6nw8"]
-
-[resource]
-shader = ExtResource("1_f6nw8")

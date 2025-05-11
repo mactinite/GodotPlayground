@@ -58,8 +58,8 @@ uniform vec3 rayleigh_coeff : source_color = vec3(0.5, 0.7, 1.0);
 // --- New uniforms for smooth transitions ---
 uniform vec3 sunset_color : source_color = vec3(1.0, 0.45, 0.15);
 uniform float sunset_intensity : hint_range(0.0, 2.0, 0.01) = 1.0;
-uniform float sunset_width : hint_range(0.01, 0.25, 0.01) = 0.08;
-uniform float sunset_view_width : hint_range(0.01, 0.5, 0.01) = 0.25;
+uniform float sunset_width : hint_range(0.01, 0.5, 0.01) = 0.08; // Increased max to 0.5 for longer sunsets
+uniform float sunset_view_width : hint_range(0.01, 1.0, 0.01) = 0.25; // Increased max to 1.0 for more control
 uniform float night_transition_width : hint_range(0.01, 0.25, 0.01) = 0.12;
 uniform vec3 night_sky_color : source_color = vec3(0.04, 0.07, 0.15);
 
@@ -200,7 +200,7 @@ void sky() {
 	) * ceil(sun_dir.z);
 	vec4 sun_color = texture(sun_sampler, sun_uv);
 
-	// Moon is in the opposite direction
+	// Moon is the second directional light
 	vec3 moon_dir = direction_to_matrix(LIGHT1_DIRECTION) * EYEDIR;
 
 	vec2 moon_uv = ((moon_dir.xy / moon_dir.z ) * moon_scale) + vec2(0.5);
@@ -214,11 +214,11 @@ void sky() {
 	float sun_elevation = LIGHT0_DIRECTION.y;
 	float night_factor = smoothstep(0.0, night_transition_width, sun_elevation); // Wider, softer night transition
 
-	// --- Rayleigh scattering (fade softly at night) ---
+	// --- Rayleigh scattering  ---
 	float mu = dot(normalize(EYEDIR), normalize(LIGHT0_DIRECTION));
-	float phase = 0.75 * (1.0 + pow(mu, rayleigh_falloff));
-	vec3 rayleigh_color = rayleigh_coeff * phase * rayleigh_strength * (0.2 + 0.8 * night_factor); // Never fully zero
-
+	float phase = 0.75 * (1.0 + pow(clamp(mu, 0.0, 1.0), rayleigh_falloff));
+	vec3 rayleigh_color = rayleigh_coeff * phase * rayleigh_strength;
+	rayleigh_color = max(rayleigh_color, vec3(0.01, 0.02, 0.04)); // Prevents hard black
 	// --- Smooth sunset/sunrise glow ---
 	float sunset_elevation = exp(-pow(sun_elevation / sunset_width, 2.0)); // Bell curve at horizon
 	float view_sunset = exp(-pow((1.0 - dot(normalize(EYEDIR), normalize(LIGHT0_DIRECTION))) / sunset_view_width, 2.0));
@@ -229,9 +229,14 @@ void sky() {
 	float horizon_blend = smoothstep(-0.15, 0.35, EYEDIR.y); // Wider, softer blend
 	vec3 base_sky = mix(sunset, rayleigh_color, horizon_blend);
 
+	// --- Blend in bottom_color for lower sky ---
+	float bottom_sky_blend = smoothstep(-0.2, 0.1, EYEDIR.y); // Adjust range for softness/height
+	base_sky = mix(bottom_color, base_sky, bottom_sky_blend);
+
 	// --- Minimum ambient, fades at night ---
 	vec3 min_ambient = mix(vec3(0.01, 0.02, 0.04), vec3(0.04, 0.07, 0.12), night_factor);
-	vec3 sky_color = max(base_sky, min_ambient);
+	// Add min_ambient instead of blending, to avoid dark banding
+	vec3 sky_color = base_sky + min_ambient;
 
 	// --- Add night sky color softly ---
 	sky_color = mix(night_sky_color, sky_color, night_factor);

@@ -1,8 +1,8 @@
-[gd_resource type="ShaderMaterial" load_steps=13 format=3 uid="uid://dtn1d233i330d"]
+[gd_resource type="ShaderMaterial" load_steps=13 format=3 uid="uid://ime7vx5trv6j"]
 
-[ext_resource type="Shader" uid="uid://d3rpy57c3fljn" path="res://day-night-cycle/stylized-sky.gdshader" id="1_upgwj"]
-[ext_resource type="Texture2D" uid="uid://i5e6unejcepd" path="res://day-night-cycle/moon-cookie.png" id="2_24hm2"]
-[ext_resource type="Texture2D" uid="uid://chdm4xpk7f1vy" path="res://day-night-cycle/sun-cookie.png" id="3_hatot"]
+[ext_resource type="Shader" uid="uid://d3rpy57c3fljn" path="res://day-night-cycle/stylized-sky.gdshader" id="1_p1ujy"]
+[ext_resource type="Texture2D" uid="uid://dpprlsdb614op" path="res://day-night-cycle/moon_phases/moon04.png" id="2_lphhk"]
+[ext_resource type="Texture2D" uid="uid://chdm4xpk7f1vy" path="res://day-night-cycle/sun-cookie.png" id="3_mlgoc"]
 
 [sub_resource type="Curve" id="Curve_fv4w7"]
 _data = [Vector2(0, 0), 0.0, 5.19332, 0, 0, Vector2(0.497423, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -5.42593, 0.0, 0, 0]
@@ -51,7 +51,7 @@ seamless = true
 noise = SubResource("FastNoiseLite_6w02q")
 
 [resource]
-shader = ExtResource("1_upgwj")
+shader = ExtResource("1_p1ujy")
 shader_parameter/cloud_shape_sampler = SubResource("NoiseTexture2D_gn8l5")
 shader_parameter/cloud_noise_sampler = SubResource("NoiseTexture2D_f5c0m")
 shader_parameter/cloud_curves = SubResource("CurveTexture_fvag4")
@@ -64,23 +64,24 @@ shader_parameter/clouds_light_color = Color(0.80923, 0.909986, 1, 1)
 shader_parameter/clouds_shadow_intensity = 6.3
 shader_parameter/high_clouds_sampler = SubResource("NoiseTexture2D_1fphk")
 shader_parameter/high_clouds_density = 0.2
-shader_parameter/top_color = Color(0.126607, 0.732705, 1, 1)
-shader_parameter/bottom_color = Color(0.716914, 0.474019, 0.28096, 1)
-shader_parameter/sun_scatter = Color(0.710418, 0.510023, 0.315452, 1)
+shader_parameter/bottom_color = Color(0.1932, 0.295473, 0.46, 1)
 shader_parameter/sun_tint = Color(0.915323, 0.896641, 0.861794, 1)
-shader_parameter/sun_sampler = ExtResource("3_hatot")
-shader_parameter/sun_scale = 1.4
-shader_parameter/sun_intensity = 3.0
-shader_parameter/sun_edge = 0.45
-shader_parameter/sun_halo = 0.11
-shader_parameter/sun_halo_strength = 0.2
+shader_parameter/sun_sampler = ExtResource("3_mlgoc")
+shader_parameter/sun_scale = 4.1
+shader_parameter/sun_intensity = 1.0
 shader_parameter/moon_tint = Color(0.7, 0.7, 1, 1)
-shader_parameter/moon_sampler = ExtResource("2_24hm2")
+shader_parameter/moon_sampler = ExtResource("2_lphhk")
 shader_parameter/moon_scale = 5.0
 shader_parameter/moon_intensity = 1.0
-shader_parameter/moon_edge = 0.18
-shader_parameter/moon_halo = 0.35
-shader_parameter/moon_halo_strength = 0.18
-shader_parameter/stars_intensity = 0.0
+shader_parameter/stars_intensity = 5.0
 shader_parameter/shooting_stars_intensity = 0.0
 shader_parameter/shooting_star_tint = Color(0, 0, 0, 1)
+shader_parameter/rayleigh_strength = 0.5
+shader_parameter/rayleigh_falloff = 1.0
+shader_parameter/rayleigh_coeff = Color(0.290232, 0.580165, 0.74687, 1)
+shader_parameter/sunset_color = Color(1, 0.62004, 0.426909, 1)
+shader_parameter/sunset_intensity = 2.0
+shader_parameter/sunset_width = 0.5
+shader_parameter/sunset_view_width = 0.78
+shader_parameter/night_transition_width = 0.15
+shader_parameter/night_sky_color = Color(0.0979003, 0.000165389, 0.192774, 1)
