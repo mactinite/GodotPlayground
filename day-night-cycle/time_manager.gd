@@ -1,6 +1,6 @@
 extends Node
 
-@export var seconds_per_day: float = 300 # 300 seconds = 5 minutes for a full day cycle
+@export var seconds_per_day: float = 15 # 300 seconds = 5 minutes for a full day cycle
 
 signal time_updated(time_of_day: float)
 
