@@ -241,19 +241,34 @@ void sky() {
 	vec4 sun_color = texture(sun_sampler, sun_uv);
 
 	// Moon is the second directional light
-	// Simple moon direction calculation using the same approach
+	// Enhanced moon direction calculation with consistent orientation
 	float moon_dot = dot(EYEDIR, normalize(LIGHT1_DIRECTION));
-
-	// Calculate moon UV coordinates
-	vec3 moon_right = normalize(cross(vec3(0.0, 1.0, 0.0), normalize(LIGHT1_DIRECTION)));
+	
+	// Create a stable orientation reference for moon
+	// Use a fixed up vector for consistent moon orientation regardless of position
+	vec3 fixed_up = vec3(0.0, 1.0, 0.0);
+	
+	// Calculate moon UV coordinates with orientation correction
+	vec3 moon_right = normalize(cross(fixed_up, normalize(LIGHT1_DIRECTION)));
 	vec3 moon_up = normalize(cross(normalize(LIGHT1_DIRECTION), moon_right));
-
-	// Project eye direction onto the plane perpendicular to moon direction
+	
+	// Apply rotation matrix to maintain consistent moon orientation
+	// This ensures the moon's features (craters, etc) always face the same direction
 	vec3 moon_proj = EYEDIR - normalize(LIGHT1_DIRECTION) * moon_dot;
-	vec2 moon_uv = vec2(
-		dot(moon_proj, moon_right),
-		dot(moon_proj, moon_up)
-	) * moon_scale + vec2(0.5);
+	
+	// Calculate angle between moon and reference up vector
+	float moon_angle = atan(dot(normalize(LIGHT1_DIRECTION), vec3(1.0, 0.0, 0.0)), 
+		                  dot(normalize(LIGHT1_DIRECTION), vec3(0.0, 0.0, 1.0)));
+	
+	// Apply rotation to compensate for moon's position in sky
+	float cos_angle = cos(moon_angle);
+	float sin_angle = sin(moon_angle);
+	vec2 rotated_proj = vec2(
+		dot(moon_proj, moon_right) * cos_angle - dot(moon_proj, moon_up) * sin_angle,
+		dot(moon_proj, moon_right) * sin_angle + dot(moon_proj, moon_up) * cos_angle
+	);
+	
+	vec2 moon_uv = rotated_proj * moon_scale + vec2(0.5);
 	// Improved moon visibility with wider transition range
 	float moon_visibility = smoothstep(-0.25, 0.05, moon_dot);
 
