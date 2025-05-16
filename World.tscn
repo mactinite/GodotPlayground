@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://xv1k3wuhqavi"]
+[gd_scene load_steps=16 format=3 uid="uid://xv1k3wuhqavi"]
 
 [ext_resource type="Texture2D" uid="uid://b8118oep1e568" path="res://kenney_prototype-textures/PNG/Dark/texture_07.png" id="1_2dftf"]
 [ext_resource type="Texture2D" uid="uid://drho6vpg1tfpa" path="res://kenney_prototype-textures/PNG/Orange/texture_02.png" id="2_js7pq"]
@@ -8,14 +8,6 @@
 [ext_resource type="Script" uid="uid://co8u2eh0b6t0p" path="res://inventory/container.gd" id="5_p1v5b"]
 [ext_resource type="Script" uid="uid://sktoy6xiau7k" path="res://day-night-cycle/day_night_cycle.gd" id="6_fv4w7"]
 [ext_resource type="Resource" uid="uid://qwdj5ixt6xok" path="res://inventory/data/Test_Inventory.tres" id="6_wygdx"]
-[ext_resource type="Texture2D" uid="uid://djodmjcoaj1ih" path="res://day-night-cycle/moon_phases/moon00.png" id="11_0to5b"]
-[ext_resource type="Texture2D" uid="uid://chxix7s3umaup" path="res://day-night-cycle/moon_phases/moon01.png" id="12_5j71u"]
-[ext_resource type="Texture2D" uid="uid://b4hj7xby841xa" path="res://day-night-cycle/moon_phases/moon02.png" id="13_jyqkj"]
-[ext_resource type="Texture2D" uid="uid://3s6x51exbu8w" path="res://day-night-cycle/moon_phases/moon03.png" id="14_ydbc3"]
-[ext_resource type="Texture2D" uid="uid://dpprlsdb614op" path="res://day-night-cycle/moon_phases/moon04.png" id="15_aj1ai"]
-[ext_resource type="Texture2D" uid="uid://bulv2wikw8kyw" path="res://day-night-cycle/moon_phases/moon05.png" id="16_d7dfr"]
-[ext_resource type="Texture2D" uid="uid://clwtcvkb07eui" path="res://day-night-cycle/moon_phases/moon06.png" id="17_c2gv2"]
-[ext_resource type="Texture2D" uid="uid://tumhagksk5pq" path="res://day-night-cycle/moon_phases/moon07.png" id="18_rp4qs"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bcbcq"]
 albedo_texture = ExtResource("1_2dftf")
@@ -82,18 +74,17 @@ script = ExtResource("6_fv4w7")
 world_environment = NodePath("../WorldEnvironment")
 sun_light = NodePath("Sun")
 moon_light = NodePath("Moon")
-sun_color = Color(0.917029, 0.859418, 0, 1)
+sun_color = Color(1, 1, 1, 1)
 sun_energy = 3.0
 moon_energy = 3.0
-moon_phase_textures = Array[Texture2D]([ExtResource("11_0to5b"), ExtResource("12_5j71u"), ExtResource("13_jyqkj"), ExtResource("14_ydbc3"), ExtResource("15_aj1ai"), ExtResource("16_d7dfr"), ExtResource("17_c2gv2"), ExtResource("18_rp4qs")])
 
 [node name="Sun" type="DirectionalLight3D" parent="environment/Day Night Cycle"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.08682, -1.3468, -15.0508)
+transform = Transform3D(1, 0, 0, 0, 0.892704, -0.450644, 0, 0.450644, 0.892704, 4.08682, -1.3468, -15.0508)
 shadow_enabled = true
 directional_shadow_pancake_size = 23.0
 
 [node name="Moon" type="DirectionalLight3D" parent="environment/Day Night Cycle"]
-transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, -9.88929, 26.3695, 21.9739)
+transform = Transform3D(0.995251, -0.00427134, 0.097246, -0.0973397, -0.0436724, 0.994293, -5.55112e-17, -0.999037, -0.0438807, -9.88929, 26.3695, 21.9739)
 light_color = Color(0.633433, 0.625947, 1, 1)
 light_energy = 0.1
 shadow_enabled = true
