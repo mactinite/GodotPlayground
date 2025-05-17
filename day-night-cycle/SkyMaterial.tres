@@ -1,7 +1,7 @@
 [gd_resource type="ShaderMaterial" load_steps=13 format=3 uid="uid://ime7vx5trv6j"]
 
 [ext_resource type="Shader" uid="uid://d3rpy57c3fljn" path="res://day-night-cycle/stylized-sky.gdshader" id="1_p1ujy"]
-[ext_resource type="Texture2D" uid="uid://i5e6unejcepd" path="res://day-night-cycle/moon-cookie.png" id="2_p1ujy"]
+[ext_resource type="Texture2D" uid="uid://v8iksuro0btp" path="res://day-night-cycle/moon.png" id="2_p1ujy"]
 [ext_resource type="Texture2D" uid="uid://chdm4xpk7f1vy" path="res://day-night-cycle/sun-cookie.png" id="3_mlgoc"]
 
 [sub_resource type="Curve" id="Curve_fv4w7"]
@@ -52,14 +52,17 @@ noise = SubResource("FastNoiseLite_6w02q")
 
 [resource]
 shader = ExtResource("1_p1ujy")
-shader_parameter/bottom_color = Color(0.354408, 0.331972, 0.271821, 1)
+shader_parameter/bottom_color = Color(0.449081, 0.422623, 0.351669, 1)
 shader_parameter/night_sky_color = Color(0.0871637, 0.000138869, 0.175375, 1)
 shader_parameter/twilight_color = Color(0.1, 0.1, 0.3, 1)
+shader_parameter/day_horizon_haze = Color(0.236129, 0.736057, 0.999998, 1)
+shader_parameter/night_horizon_haze = Color(0.017093, 0.00150912, 0.0582974, 1)
+shader_parameter/horizon_haze_density = 0.06
 shader_parameter/rayleigh_strength = 5.0
 shader_parameter/rayleigh_falloff = 5.0
 shader_parameter/rayleigh_coeff = Color(0, 0.26, 0.4, 1)
-shader_parameter/air_mass_shift = 1.0
-shader_parameter/sun_tint = Color(1, 0.987722, 0.942275, 1)
+shader_parameter/air_mass_shift = 1.01
+shader_parameter/sun_tint = Color(1, 1, 1, 1)
 shader_parameter/sun_sampler = ExtResource("3_mlgoc")
 shader_parameter/sun_scale = 7.6
 shader_parameter/sun_intensity = 1.0
@@ -68,12 +71,12 @@ shader_parameter/sunset_intensity = 0.75
 shader_parameter/sunset_width = 0.1
 shader_parameter/sunset_view_width = 0.44
 shader_parameter/sunset_offset = -1.1176e-08
-shader_parameter/night_transition_width = 0.18
+shader_parameter/night_transition_width = 0.17
 shader_parameter/moon_tint = Color(0.79184, 0.796869, 0.999999, 1)
 shader_parameter/moon_sampler = ExtResource("2_p1ujy")
 shader_parameter/moon_scale = 4.32
 shader_parameter/moon_intensity = 2.0
-shader_parameter/moon_phase = 0.0
+shader_parameter/moon_phase = 0.3
 shader_parameter/stars_intensity = 5.0
 shader_parameter/shooting_stars_intensity = 0.0
 shader_parameter/shooting_star_tint = Color(0, 0, 0, 1)

@@ -8,6 +8,13 @@ uniform vec3 bottom_color : source_color = vec3(0.5, 0.7, 1.0);
 uniform vec3 night_sky_color : source_color = vec3(0.04, 0.07, 0.15);
 uniform vec3 twilight_color : source_color = vec3(0.1, 0.1, 0.3); // Upper sky color during twilight
 
+// Horizon Haze Settings
+group_uniforms horizon_haze;
+
+uniform vec3 day_horizon_haze : source_color = vec3(0.7, 0.8, 0.9); // Horizon haze color during day
+uniform vec3 night_horizon_haze : source_color = vec3(0.15, 0.2, 0.35); // Horizon haze color during night
+uniform float horizon_haze_density : hint_range(0.0, 1.0, 0.01) = 0.75; // Density of the horizon haze
+
 // Rayleigh Scattering
 group_uniforms rayleigh;
 
@@ -46,6 +53,7 @@ uniform sampler2D moon_sampler : repeat_disable, filter_linear_mipmap;
 uniform float moon_scale : hint_range(0.1, 10.0, 0.01) = 1.0;
 uniform float moon_intensity : hint_range(1.0, 3.0, 0.01) = 1.0;
 uniform float moon_phase : hint_range(0.0, 1.0, 0.01) = 0.0;  // 0 = new moon, 0.5 = full moon, 1 = new moon
+uniform float moon_rotation : hint_range(0.0, 6.28, 0.01) = 0.0;  // Rotation angle in radians (0-2π)
 
 // Stars
 group_uniforms stars;
@@ -271,42 +279,87 @@ vec4 calculate_sun(vec3 eye_dir, float bottom_mask) {
     
     // Get sun texture color
     vec4 sun_color = texture(sun_sampler, sun_uv);
-    
+	
     // Return all sun parameters as a vec4
     // x = sun_dot, y = sun_visibility, z = sun_mask, w = sun_uv storage (not used directly)
     return vec4(sun_dot, sun_visibility, sun_mask, 0.0);
 }
 
 // Calculates moon position and parameters
-vec4 calculate_moon(vec3 eye_dir) {
+vec4 calculate_moon(vec3 eye_dir, out vec2 out_moon_uv) {
     // Moon is the second directional light
     float moon_dot = dot(eye_dir, normalize(LIGHT1_DIRECTION));
     
     // Create a stable, fixed coordinate system for the moon that doesn't change
     // as the moon moves across the sky
-    
-    // Always use world-space vectors for a consistent reference frame
-    vec3 world_up = vec3(0.0, 1.0, 0.0); // World up direction
-    vec3 world_north = vec3(0.0, 0.0, -1.0); // Fixed north direction
-    
-    // Project eye direction onto a plane perpendicular to the moon direction
-    vec3 moon_proj = eye_dir - normalize(LIGHT1_DIRECTION) * moon_dot;
-    
-    // Use fixed world axes to create a stable coordinate system for UV mapping
-    // This ensures the moon's orientation stays fixed relative to the "up" direction
     vec3 moon_forward = normalize(LIGHT1_DIRECTION);
-    vec3 moon_right = normalize(cross(world_up, moon_forward));
-    vec3 moon_up = normalize(cross(moon_forward, moon_right));
+    
+    // Calculate height above horizon for fade-out effect
+    // This creates a smooth transition that hides any flipping when near the horizon
+    float moon_horizon_angle = asin(moon_forward.y);
+    float horizon_fade = smoothstep(0.0, 0.09, abs(moon_horizon_angle)); // Fade when below ~5 degrees
+    
+    // Use a fixed world-space reference vector that doesn't depend on moon position
+    // This ensures the moon texture always has the same orientation regardless of position
+    vec3 reference = vec3(0.0, 0.0, -1.0); // Fixed reference for stable orientation
+    
+    // Variables we'll calculate
+    vec3 moon_right;
+    vec3 moon_up;
+    vec3 moon_proj;
+    
+    // Handle special case where moon is directly above or below
+    if (abs(moon_forward.y) > 0.99999) {
+        // When near zenith/nadir, use a fixed orientation to prevent flipping
+        moon_right = vec3(1.0, 0.0, 0.0);
+        moon_up = vec3(0.0, 0.0, moon_forward.y > 0.0 ? -1.0 : 1.0);
+        
+        // Project eye direction onto a plane perpendicular to the moon direction
+        moon_proj = eye_dir - moon_forward * moon_dot;
+        
+        // Determine if we need to blend with the normal calculation
+        float blend_factor = smoothstep(0.995, 0.9999, abs(moon_forward.y));
+        
+        // If we're in the blend region, also calculate the normal vectors
+        if (blend_factor > 0.0) {
+            vec3 temp_right = normalize(cross(reference, moon_forward));
+            vec3 temp_up = normalize(cross(moon_forward, temp_right));
+            
+            // Blend between the fixed orientation and the calculated one
+            moon_right = normalize(mix(temp_right, moon_right, blend_factor));
+            moon_up = normalize(mix(temp_up, moon_up, blend_factor));
+        }
+    } else {
+        // Normal case - not near zenith/nadir
+        // Create a stable reference frame using the fixed reference vector
+        moon_right = normalize(cross(reference, moon_forward));
+        moon_up = normalize(cross(moon_forward, moon_right));
+        
+        // Project eye direction onto a plane perpendicular to the moon direction
+        moon_proj = eye_dir - moon_forward * moon_dot;
+    }
     
     // Map the moon texture with a fixed "up" direction regardless of position in sky
     // This creates consistent orientation as the moon moves across the sky
+    // Apply rotation based on the moon_rotation uniform
+    float cos_rot = cos(moon_rotation);
+    float sin_rot = sin(moon_rotation);
+    
+    // Apply rotation to the projection vectors
+    vec3 rotated_right = moon_right * cos_rot - moon_up * sin_rot;
+    vec3 rotated_up = moon_right * sin_rot + moon_up * cos_rot;
+    
     vec2 moon_uv = vec2(
-        dot(moon_proj, moon_right),
-        dot(moon_proj, moon_up)
+        dot(moon_proj, rotated_right),
+        dot(moon_proj, rotated_up)
     ) * moon_scale + vec2(0.5);
     
-    // Improved moon visibility with wider transition range
-    float moon_visibility = smoothstep(-0.25, 0.05, moon_dot);
+    // Pass calculated UV coordinates back to the calling function
+    out_moon_uv = moon_uv;
+    
+    // Improved moon visibility with wider transition range and horizon fade
+    // horizon_fade (calculated above) ensures the moon fades out when it's near the horizon
+    float moon_visibility = smoothstep(-0.25, 0.05, moon_dot) * horizon_fade;
     
     // Create texture mask with enhanced visibility factor
     float moon_mask = smoothstep(0.0, 0.3, clamp(moon_uv.x * (1.0 - moon_uv.x), 0.0, 1.0) *
@@ -448,20 +501,48 @@ vec3 add_sun_halo(vec3 sky_color, vec3 eye_dir, float sun_visibility, float sun_
     return sky_color + sun_halo * sun_halo_color * sun_visibility * smoothstep(-0.1, 0.2, sun_dot);
 }
 
-// Add moon halo effect to the sky
+// Add moon halo effect to the sky - uses the same moon dot product as in calculate_moon
 vec3 add_moon_halo(vec3 sky_color, vec3 eye_dir, float moon_visibility, float moon_dot) {
+    // Get moon direction and calculate horizon angle for fade
+    vec3 moon_direction = normalize(LIGHT1_DIRECTION);
+    vec3 sun_direction = normalize(LIGHT0_DIRECTION);
+    float moon_horizon_angle = asin(moon_direction.y);
+    float sun_elevation = sun_direction.y;
+    
+    // Create horizon fade factor for halo (fade out when near/below horizon)
+    // More aggressive than the moon body itself to ensure halo disappears first
+    float halo_horizon_fade = smoothstep(-0.02, 0.15, moon_horizon_angle);
+    
+    // Daytime factor - fade out moon halo during daylight
+    float day_factor = smoothstep(-0.1, 0.15, sun_elevation);
+    float night_factor = 1.0 - day_factor;
+    
+    // Calculate sun-moon proximity to fade out halo when sun is nearby
+    float sun_moon_dot = dot(sun_direction, moon_direction);
+    float sun_proximity_fade = smoothstep(0.7, 0.0, sun_moon_dot); // Fade out when sun and moon are close
+    
+    // Calculate viewing angle proximity to sun to fade out halo when looking near the sun
+    float view_sun_dot = dot(normalize(eye_dir), sun_direction);
+    float sun_view_fade = smoothstep(0.7, 0.0, view_sun_dot); // Fade out when looking near the sun
+    
+    // Combine all fade factors - more aggressive than moon body
+    float combined_fade = halo_horizon_fade * night_factor * sun_proximity_fade * sun_view_fade;
+    
+    // Early exit if halo would be invisible
+    if (combined_fade <= 0.01) return sky_color;
+    
     // Create a moon halo/glow effect
     float moon_halo_size = 15.0 * moon_scale;
     float moon_halo_intensity = moon_intensity * 0.4;
     float moon_halo_falloff = 3.5;
     
     // Calculate moon halo based on view angle to moon
-    float moon_angle_for_halo = 1.0 - max(0.0, dot(normalize(eye_dir), normalize(LIGHT1_DIRECTION)));
+    float moon_angle_for_halo = 1.0 - max(0.0, dot(normalize(eye_dir), moon_direction));
     float moon_halo = moon_halo_intensity * exp(-moon_angle_for_halo * moon_halo_size * moon_halo_falloff);
     
     // Add the halo around the moon with a slight blue tint
     vec3 moon_halo_color = vec3(0.8, 0.9, 1.0) * moon_tint * 0.8;
-    return sky_color + moon_halo * moon_halo_color * moon_visibility * smoothstep(-0.1, 0.2, moon_dot);
+    return sky_color + moon_halo * moon_halo_color * moon_visibility * smoothstep(-0.1, 0.2, moon_dot) * combined_fade;
 }
 
 // Calculate the dynamic cloud color based on time of day
@@ -544,41 +625,28 @@ void sky() {
     
     vec4 sun_color = texture(sun_sampler, sun_uv);
 
-    // Calculate moon parameters - this function now handles UV creation internally
-    vec4 moon_params = calculate_moon(EYEDIR);
+    // Calculate moon parameters - the function now outputs the UV coordinates as well
+    vec2 moon_uv;
+    vec4 moon_params = calculate_moon(EYEDIR, moon_uv);
     float moon_dot = moon_params.x;
     float moon_visibility = moon_params.y;
     float moon_mask = moon_params.z;
     float moon_phase_mask = moon_params.w;
     
-    // Create stable moon UVs using the fixed world coordinate system approach
-    vec3 world_up = vec3(0.0, 1.0, 0.0); // World up direction
-    vec3 moon_forward = normalize(LIGHT1_DIRECTION);
-    vec3 moon_right = normalize(cross(world_up, moon_forward));
-    vec3 moon_up = normalize(cross(moon_forward, moon_right));
-    
-    // Project eye direction onto a plane perpendicular to the moon direction
-    vec3 moon_proj = EYEDIR - moon_forward * moon_dot;
-    
-    // Calculate moon texture coordinates
-    vec2 moon_uv = vec2(
-        dot(moon_proj, moon_right),
-        dot(moon_proj, moon_up)
-    ) * moon_scale + vec2(0.5);
-    
+    // Sample the moon texture using the stable UVs from calculate_moon
     vec4 moon_color = texture(moon_sampler, moon_uv);
 
     // Calculate atmospheric sky color
     vec3 sky_color = calculate_atmosphere(EYEDIR, sun_dot);
-
-    // Add stars
-    sky_color = add_stars_to_sky(sky_color, EYEDIR, sun_elevation);
-
-    // Add shooting stars
-    if (shooting_stars_intensity > 0.0) {
-        sky_color += get_shooting_star(EYEDIR) * shooting_stars_intensity * shooting_star_tint;
-    }
-
+    
+    // Calculate a full moon disk mask (including both lit and dark parts)
+    // This will be used to ensure stars don't show through the moon
+    vec2 centered_moon_uv = (moon_uv - vec2(0.5)) * 2.0;
+    float moon_radius = 1.0;
+    float moon_edge_smoothness = 0.01;
+    float full_moon_mask = smoothstep(moon_radius, moon_radius - moon_edge_smoothness, length(centered_moon_uv)) 
+                         * moon_visibility * smoothstep(-0.1, 0.2, moon_dot);
+    
     // Add sun halo
     sky_color = add_sun_halo(sky_color, EYEDIR, sun_visibility, sun_dot);
     
@@ -591,7 +659,18 @@ void sky() {
     // Add moon halo
     sky_color = add_moon_halo(sky_color, EYEDIR, moon_visibility, moon_dot);
     
-    // Add moon to sky
+    // Add stars BEHIND the moon (after calculating moon position but before rendering it)
+    vec3 stars_color = add_stars_to_sky(sky_color, EYEDIR, sun_elevation);
+    
+    // Add shooting stars (also behind the moon)
+    if (shooting_stars_intensity > 0.0) {
+        stars_color += get_shooting_star(EYEDIR) * shooting_stars_intensity * shooting_star_tint;
+    }
+    
+    // Mix stars with sky color using the full moon mask to ensure stars are hidden behind moon
+    sky_color = mix(stars_color, sky_color, full_moon_mask);
+    
+    // Add moon to sky (on top of everything else)
     float enhanced_moon_intensity = moon_intensity * 3.0;
     float enhanced_moon_alpha = min(1.0, moon_color.a * moon_phase_mask * 1.8);
     sky_color = mix(sky_color, moon_color.rgb * enhanced_moon_intensity * moon_tint, 
